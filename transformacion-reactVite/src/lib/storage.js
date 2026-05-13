@@ -1,4 +1,3 @@
-// Storage keys
 const STORAGE_KEYS = {
   USUARIOS: 'usuarios',
   PRODUCTOS: 'productos',
@@ -22,28 +21,35 @@ export const setStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
-// Specific methods
+// Usuarios
 export const getUsuarios = () => getStorage(STORAGE_KEYS.USUARIOS, []);
 export const setUsuarios = (data) => setStorage(STORAGE_KEYS.USUARIOS, data);
 
+// Productos
 export const getProductos = () => getStorage(STORAGE_KEYS.PRODUCTOS, []);
 export const setProductos = (data) => setStorage(STORAGE_KEYS.PRODUCTOS, data);
 
+// Ventas
 export const getVentas = () => getStorage(STORAGE_KEYS.VENTAS, []);
 export const setVentas = (data) => setStorage(STORAGE_KEYS.VENTAS, data);
 
+// Proveedores
 export const getProveedores = () => getStorage(STORAGE_KEYS.PROVEEDORES, []);
 export const setProveedores = (data) => setStorage(STORAGE_KEYS.PROVEEDORES, data);
 
+// Ordenes de Compra
 export const getOrdenesCompra = () => getStorage(STORAGE_KEYS.ORDENES_COMPRA, []);
 export const setOrdenesCompra = (data) => setStorage(STORAGE_KEYS.ORDENES_COMPRA, data);
 
+// Mensajes de Contacto
 export const getMensajesContacto = () => getStorage(STORAGE_KEYS.MENSAJES_CONTACTO, []);
 export const setMensajesContacto = (data) => setStorage(STORAGE_KEYS.MENSAJES_CONTACTO, data);
 
+// Carrito Landing (público)
 export const getCarritoLanding = () => getStorage(STORAGE_KEYS.CARRITO_LANDING, []);
 export const setCarritoLanding = (data) => setStorage(STORAGE_KEYS.CARRITO_LANDING, data);
 
+// Sesión
 export const getSesionActiva = () => localStorage.getItem(STORAGE_KEYS.SESION_ACTIVA) === 'true';
 export const setSesionActiva = (value) => localStorage.setItem(STORAGE_KEYS.SESION_ACTIVA, value);
 
@@ -53,22 +59,23 @@ export const setUsuarioActivo = (value) => localStorage.setItem(STORAGE_KEYS.USU
 export const getRolActivo = () => localStorage.getItem(STORAGE_KEYS.ROL_ACTIVO) || '';
 export const setRolActivo = (value) => localStorage.setItem(STORAGE_KEYS.ROL_ACTIVO, value);
 
+// Logout
 export const logout = () => {
   localStorage.removeItem(STORAGE_KEYS.SESION_ACTIVA);
   localStorage.removeItem(STORAGE_KEYS.USUARIO_ACTIVO);
   localStorage.removeItem(STORAGE_KEYS.ROL_ACTIVO);
 };
 
-// Initialize default data
+// Inicializar datos de ejemplo
 export const initializeData = () => {
-  // Usuarios
+  // Usuarios iniciales
   if (getUsuarios().length === 0) {
     setUsuarios([
       { nombre: "Administrador General", usuario: "admin", password: "123456", rol: "admin" }
     ]);
   }
   
-  // Productos demo
+  // Productos de ejemplo
   if (getProductos().length === 0) {
     setProductos([
       {
@@ -103,7 +110,43 @@ export const initializeData = () => {
         stock: 8,
         imagen: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=300&q=80",
         estado: "activo"
+      },
+      {
+        id: 4,
+        nombre: "Casaca Denim",
+        categoria: "Ropa",
+        color: "Azul",
+        talla: "L",
+        precio: 159.90,
+        stock: 5,
+        imagen: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=300&q=80",
+        estado: "activo"
       }
     ]);
+  }
+  
+  // Ventas de ejemplo (opcional)
+  if (getVentas().length === 0) {
+    setVentas([]);
+  }
+  
+  // Proveedores de ejemplo (opcional)
+  if (getProveedores().length === 0) {
+    setProveedores([]);
+  }
+  
+  // Ordenes de compra de ejemplo (opcional)
+  if (getOrdenesCompra().length === 0) {
+    setOrdenesCompra([]);
+  }
+  
+  // Mensajes de contacto de ejemplo (opcional)
+  if (getMensajesContacto().length === 0) {
+    setMensajesContacto([]);
+  }
+  
+  // Carrito de ejemplo (opcional)
+  if (getCarritoLanding().length === 0) {
+    setCarritoLanding([]);
   }
 };
