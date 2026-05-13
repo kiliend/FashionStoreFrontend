@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getUsuarios, getSesionActiva, getUsuarioActivo, getRolActivo, setSesionActiva, setUsuarioActivo, setRolActivo, logout as logoutStorage } from '../lib/storage';
+import { getUsuarios, setUsuarios, getSesionActiva, getUsuarioActivo, getRolActivo, setSesionActiva, setUsuarioActivo, setRolActivo, logout as logoutStorage } from '../lib/storage';
 
 const AuthContext = createContext();
 
@@ -56,10 +56,10 @@ export const AuthProvider = ({ children }) => {
       return { success: false, message: "La contraseña debe tener al menos 6 caracteres" };
     }
     
-    usuarios.push({ nombre, usuario, password, rol });
-    setUsuarios(usuarios);
+    const nuevosUsuarios = [...usuarios, { nombre, usuario, password, rol }];
+    setUsuarios(nuevosUsuarios);
     
-    return { success: true, message: "Usuario registrado correctamente" };
+    return { success: true, message: "Cuenta creada correctamente. Ahora puede iniciar sesión." };
   };
 
   return (
