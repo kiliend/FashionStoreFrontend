@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FashionStore - Carrito</title>
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar section" style="padding-bottom: 20px;">
+    <div class="logo">FashionStore</div>
+
+    <div class="nav-links">
+      <a href="landing.html">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="carrito.html">Carrito</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="index.html" class="btn-nav" id="navSesion">Ingresar</a>
+      <button id="btnCerrarSesionPublica" class="btn-secondary" onclick="cerrarSesionPublica()" style="display:none;">
+      Salir
+      </button>
+    </div>
+  </nav>
+
+  <section class="section" style="padding-top: 20px;">
+    <div class="section-title">
+      <h2>Carrito de compra</h2>
+      <p>Revisa los productos seleccionados</p>
+    </div>
+
+    <div class="landing-cart-box">
+      <div id="landingCartItems">
+        <p class="empty-text">No hay productos agregados al carrito.</p>
+      </div>
+
+      <div class="landing-cart-summary">
+        <p>Subtotal: <strong>S/ <span id="landingSubtotal">0.00</span></strong></p>
+        <p>IGV (18%): <strong>S/ <span id="landingIgv">0.00</span></strong></p>
+        <h3>Total: S/ <span id="landingTotal">0.00</span></h3>
+        <button class="btn-primary full-btn" onclick="finalizarCompraLanding()">Finalizar compra</button>
+        <p id="landingMessage" class="landing-message"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2026 FashionStore - Carrito</p>
+  </footer>
+
+<script src="js/carrito.js"></script>
+<script src="js/navSesion.js"></script>
+
+</body>
+</html>

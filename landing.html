@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FashionStore - Inicio</title>
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="hero">
+    <nav class="navbar">
+      <div class="logo">FashionStore</div>
+
+      <div class="nav-links">
+        <a href="landing.html">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="carrito.html">Carrito</a>
+        <a href="contacto.html">Contacto</a>
+        <a href="index.html" class="btn-nav" id="navSesion">Ingresar</a>
+        <button id="btnCerrarSesionPublica" class="btn-secondary" onclick="cerrarSesionPublica()" style="display:none;">
+          Salir
+        </button>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <div class="hero-text">
+        <span class="hero-badge">Nueva colección 2026</span>
+        <h1>Moda moderna para cada estilo</h1>
+        <p>
+          Descubre ropa, calzado y accesorios en una experiencia más organizada,
+          visual y profesional.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="catalogo.html" class="btn-primary">Ver catálogo</a>
+          <a href="carrito.html" class="btn-secondary">Ir al carrito</a>
+        </div>
+      </div>
+
+      <div class="hero-highlight">
+        <div class="mini-offer">
+          <span>🔥 Ofertas</span>
+          <h3>Promociones exclusivas</h3>
+          <p>Encuentra descuentos en productos seleccionados.</p>
+        </div>
+
+        <div class="mini-offer">
+          <span>🚚 Entrega</span>
+          <h3>Compra rápida</h3>
+          <p>Navega por categorías y compra con facilidad.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>Sobre FashionStore</h2>
+      <p>Conoce más sobre nuestra empresa</p>
+    </div>
+
+    <div class="promo-grid">
+      <div class="promo-card">
+        <h3>¿Quiénes somos?</h3>
+        <p>
+          FashionStore es una tienda digital especializada en la venta de ropa,
+          calzado y accesorios modernos. Nuestro enfoque está en brindar una experiencia
+          de compra intuitiva, rápida y visualmente atractiva.
+        </p>
+      </div>
+
+      <div class="promo-card">
+        <h3>Misión</h3>
+        <p>
+          Ofrecer productos de moda de calidad mediante una plataforma tecnológica
+          eficiente, garantizando una experiencia de compra segura y accesible.
+        </p>
+      </div>
+
+      <div class="promo-card">
+        <h3>Visión</h3>
+        <p>
+          Ser una tienda digital líder en el mercado peruano, destacando por innovación,
+          crecimiento sostenible y excelencia en el servicio.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>Categorías destacadas</h2>
+      <p>Explora nuestros productos principales</p>
+    </div>
+
+    <div class="promo-grid">
+      <div class="promo-card">
+        <h3>Ropa</h3>
+        <p>Polos, casacas, pantalones y prendas urbanas.</p>
+        <a href="catalogo.html" class="btn-secondary">Explorar</a>
+      </div>
+
+      <div class="promo-card">
+        <h3>Calzado</h3>
+        <p>Zapatillas y estilos modernos para tu día a día.</p>
+        <a href="catalogo.html" class="btn-secondary">Explorar</a>
+      </div>
+
+      <div class="promo-card">
+        <h3>Accesorios</h3>
+        <p>Bolsos, gorras y complementos para cada look.</p>
+        <a href="catalogo.html" class="btn-secondary">Explorar</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>Productos destacados</h2>
+      <p>Algunos de nuestros favoritos de la temporada</p>
+    </div>
+
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80" alt="Polo Oversize">
+        <div class="product-info">
+          <span class="product-category">Ropa</span>
+          <h3>Polo Oversize</h3>
+          <p class="product-price">S/ 59.90</p>
+          <a href="catalogo.html" class="btn-primary full-btn">Ver producto</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" alt="Zapatillas Urban">
+        <div class="product-info">
+          <span class="product-category">Calzado</span>
+          <h3>Zapatillas Urban</h3>
+          <p class="product-price">S/ 219.00</p>
+          <a href="catalogo.html" class="btn-primary full-btn">Ver producto</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80" alt="Bolso Casual">
+        <div class="product-info">
+          <span class="product-category">Accesorio</span>
+          <h3>Bolso Casual</h3>
+          <p class="product-price">S/ 89.90</p>
+          <a href="catalogo.html" class="btn-primary full-btn">Ver producto</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80" alt="Casaca Denim">
+        <div class="product-info">
+          <span class="product-category">Ropa</span>
+          <h3>Casaca Denim</h3>
+          <p class="product-price">S/ 159.90</p>
+          <a href="catalogo.html" class="btn-primary full-btn">Ver producto</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="section-title">
+      <h2>Promociones rápidas</h2>
+      <p>Beneficios pensados para el cliente</p>
+    </div>
+
+    <div class="promo-grid">
+      <div class="promo-card">
+        <h3>2x1 en accesorios</h3>
+        <p>Válido en productos seleccionados.</p>
+      </div>
+      <div class="promo-card">
+        <h3>Envío gratis</h3>
+        <p>Por compras mayores a S/ 150.</p>
+      </div>
+      <div class="promo-card">
+        <h3>Descuentos por temporada</h3>
+        <p>Aprovecha campañas especiales y novedades.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>Inspiración de estilo</h2>
+      <p>Moda pensada para cada ocasión</p>
+    </div>
+
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=800&q=80" alt="Moda femenina">
+      </div>
+
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" alt="Outfit moderno">
+      </div>
+
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=800&q=80" alt="Calzado urbano">
+      </div>
+
+      <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80" alt="Accesorios de moda">
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>Nuestros valores</h2>
+      <p>Principios que guían nuestra empresa</p>
+    </div>
+
+    <div class="promo-grid">
+      <div class="promo-card">
+        <h3>Innovación</h3>
+        <p>Aplicamos tecnología moderna en cada proceso.</p>
+      </div>
+      <div class="promo-card">
+        <h3>Calidad</h3>
+        <p>Seleccionamos productos que cumplen estándares.</p>
+      </div>
+      <div class="promo-card">
+        <h3>Compromiso</h3>
+        <p>Priorizamos la satisfacción del cliente.</p>
+      </div>
+      <div class="promo-card">
+        <h3>Transparencia</h3>
+        <p>Procesos claros y confiables.</p>
+      </div>
+      <div class="promo-card">
+        <h3>Mejora continua</h3>
+        <p>Evolucionamos constantemente.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2026 FashionStore - Inicio</p>
+  </footer>
+<script src="js/landing.js"></script>
+<script src="js/navSesion.js"></script>
+</body>
+</html>

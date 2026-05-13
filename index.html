@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FashionStore Pro</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+ <!-- LOGIN / REGISTRO -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-circle">FS</div>
+      <h1>FashionStore Pro</h1>
+      <p>Sistema de ventas de ropa, calzado y accesorios</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="showAuthTab('login')">Acceso</button>
+      <button class="auth-tab" id="tabRegister" onclick="showAuthTab('register')">Crear cuenta</button>
+    </div>
+
+    <!-- FORM LOGIN -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label for="username">Usuario</label>
+        <input type="text" id="username" placeholder="Ingrese su usuario">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" placeholder="Ingrese su contraseña">
+      </div>
+
+      <button class="btn-primary full" onclick="login()">Ingresar</button>
+      <p id="loginMessage" class="message"></p>
+
+      <div class="login-help">
+        <small>Usuario admin inicial: <b>admin</b></small>
+        <small>Contraseña inicial: <b>123456</b></small>
+      </div>
+    </div>
+
+    <!-- FORM REGISTER -->
+    <div id="registerForm" class="hidden">
+      <div class="form-group">
+        <label for="registerName">Nombre completo</label>
+        <input type="text" id="registerName" placeholder="Ej. Ana Torres">
+      </div>
+
+      <div class="form-group">
+        <label for="registerUsername">Usuario</label>
+        <input type="text" id="registerUsername" placeholder="Ej. anatorres">
+      </div>
+
+      <div class="form-group">
+        <label for="registerPassword">Contraseña</label>
+        <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres">
+      </div>
+
+      <button class="btn-primary full" onclick="registerUserFromLogin()">Crear cuenta</button>
+      <p id="registerMessage" class="message"></p>
+    </div>
+  </div>
+</div>
+
+  <!-- SISTEMA -->
+  <div class="app hidden-app" id="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-logo">FS</div>
+        <div>
+          <h2>FashionStore</h2>
+          <p>Panel de administración</p>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <button class="menu-item active" onclick="showSection('dashboard', this)">
+          <span>📊</span> Dashboard
+        </button>
+        <button class="menu-item" onclick="showSection('productos', this)">
+          <span>👗</span> Productos
+        </button>
+        <button class="menu-item" onclick="showSection('ventas', this)">
+          <span>🛍️</span> Ventas
+        </button>
+        <button class="menu-item" onclick="showSection('usuarios', this)" id="usuariosMenuBtn">
+          <span>👤</span> Usuarios
+        </button>
+        <button class="menu-item" onclick="showSection('reportes', this)">
+          <span>📈</span> Reportes
+        </button>
+        <button class="menu-item" onclick="showSection('proveedores', this)">
+          <span>🚚</span> Proveedores
+        </button>
+        <button class="menu-item" onclick="showSection('mensajes', this)">
+          <span>📩</span> Mensajes
+        </button>
+        <a href="landing.html" class="btn-back" onclick="logout()">🏠 Inicio</a>
+
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+          <div>
+            <h1>Tienda de Moda</h1>
+            <p>Ropa, calzado y accesorios</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <input type="text" placeholder="Buscar producto..." class="search-box" />
+          <div class="user-box">
+            <span class="user-avatar" id="userInitial">A</span>
+            <div>
+              <strong id="currentUser">Administrador</strong>
+              <small id="currentRole">Administrador</small>
+            </div>
+          </div>
+          <button class="btn-logout" onclick="logout()">Salir</button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+        <section id="dashboard" class="section active">
+          <div class="section-header">
+            <div>
+              <h2>Dashboard</h2>
+              <p>Resumen general y estado actual de la tienda</p>
+            </div>
+          </div>
+
+          <div class="cards">
+            <div class="card stat-card">
+              <div>
+                <p>Ventas acumuladas</p>
+                <h3 id="dashboardVentas">S/ 0.00</h3>
+              </div>
+              <span class="emoji">💰</span>
+            </div>
+
+            <div class="card stat-card">
+              <div>
+                <p>Productos activos</p>
+                <h3 id="dashboardActivos">0</h3>
+              </div>
+              <span class="emoji">👕</span>
+            </div>
+
+            <div class="card stat-card">
+              <div>
+                <p>Productos inmovilizados</p>
+                <h3 id="dashboardInactivos">0</h3>
+              </div>
+              <span class="emoji">🔒</span>
+            </div>
+
+            <div class="card stat-card">
+              <div>
+                <p>Stock total</p>
+                <h3 id="dashboardStock">0</h3>
+              </div>
+              <span class="emoji">📦</span>
+            </div>
+          </div>
+
+          <div class="sales-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Últimas ventas</h3>
+                <span class="tag">Resumen</span>
+              </div>
+              <div id="dashboardUltimasVentas">
+                <p class="empty-cart">No hay ventas registradas todavía.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Alertas rápidas</h3>
+                <span class="tag warning">Atención</span>
+              </div>
+              <div id="dashboardAlertas">
+                <p class="empty-cart">No hay alertas disponibles.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      <!-- PRODUCTOS -->
+      <section id="productos" class="section">
+        <div class="section-header">
+          <div>
+            <h2>Gestión de Productos</h2>
+            <p>Registra ropa, calzado y accesorios</p>
+          </div>
+        </div>
+
+            <div class="card form-card">
+            <h3>Registrar producto</h3>
+
+            <div class="form-grid">
+            <div class="form-group">
+              <label for="nombreProducto">Nombre del producto</label>
+              <input type="text" id="nombreProducto" placeholder="Ej. Polo oversize">
+            </div>
+
+            <div class="form-group">
+              <label for="categoriaProducto">Categoría</label>
+              <select id="categoriaProducto" onchange="actualizarTallasPorCategoria()">
+                <option value="">Seleccione</option>
+                <option>Ropa</option>
+                <option>Calzado</option>
+                <option>Accesorio</option>
+              </select>
+            </div>
+
+              <div class="form-group">
+                <label for="colorProducto">Color</label>
+                <select id="colorProducto">
+                  <option value="">Seleccione un color</option>
+                  <option>Negro</option>
+                  <option>Blanco</option>
+                  <option>Rojo</option>
+                  <option>Azul</option>
+                  <option>Verde</option>
+                  <option>Rosado</option>
+                  <option>Gris</option>
+                  <option>Marrón</option>
+                  <option>Beige</option>
+                  <option>Amarillo</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="tallaProducto">Talla</label>
+                <select id="tallaProducto">
+                  <option value="">Seleccione una talla</option>
+                  <option>XS</option>
+                  <option>S</option>
+                  <option>M</option>
+                  <option>L</option>
+                  <option>XL</option>
+                  <option>XXL</option>
+                  <option>35</option>
+                  <option>36</option>
+                  <option>37</option>
+                  <option>38</option>
+                  <option>39</option>
+                  <option>40</option>
+                  <option>41</option>
+                  <option>42</option>
+                  <option>43</option>
+                  <option>44</option>
+                  <option>Única</option>
+                </select>
+              </div>
+
+            <div class="form-group">
+              <label for="precioProducto">Precio</label>
+              <input type="number" id="precioProducto" placeholder="Ej. 79.90" step="0.01">
+            </div>
+
+            <div class="form-group">
+              <label for="stockProducto">Stock</label>
+              <input type="number" id="stockProducto" placeholder="Ej. 15">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="imagenProducto">Imagen del producto</label>
+              <input type="file" id="imagenProducto" accept="image/*">
+            </div>
+      </div>
+
+  <div class="preview-box">
+    <img id="previewImagen" src="" alt="Vista previa" style="display:none;">
+  </div>
+
+  <button class="btn-primary" onclick="registrarProducto()">Guardar producto</button>
+  <p id="mensajeProducto" class="message"></p>
+</div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Listado de productos</h3>
+            <span class="tag">Catálogo</span>
+          </div>
+
+                    <table id="tablaProductos">
+                        <thead>
+                          <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Color</th>
+                            <th>Talla</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+        </div>
+      </section>
+
+      <!-- VENTAS -->
+      <section id="ventas" class="section">
+        <div class="section-header">
+          <div>
+            <h2>Módulo de Ventas</h2>
+            <p>Proceso simple de venta para tienda de moda</p>
+          </div>
+        </div>
+
+        <div class="sales-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3>Productos disponibles</h3>
+              <span class="tag">Moda</span>
+            </div>
+
+            <div class="card form-card">
+                <h3>Seleccionar producto para venta</h3>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="ventaProducto">Producto</label>
+                    <select id="ventaProducto" onchange="actualizarOpcionesVenta()">
+                      <option value="">Seleccione un producto</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="ventaColor">Color</label>
+                    <select id="ventaColor" onchange="actualizarTallasVenta()">
+                      <option value="">Seleccione un color</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="ventaTalla">Talla</label>
+                    <select id="ventaTalla" onchange="mostrarDetalleVenta()">
+                      <option value="">Seleccione una talla</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Precio</label>
+                    <input type="text" id="ventaPrecio" readonly placeholder="Precio del producto">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Stock disponible</label>
+                    <input type="text" id="ventaStock" readonly placeholder="Stock disponible">
+                  </div>
+                </div>
+
+                <button class="btn-primary" onclick="agregarProductoSeleccionado()">Agregar al carrito</button>
+                <p id="mensajeSeleccionVenta" class="message"></p>
+              </div>
+
+          <div class="card cart-card">
+            <div class="card-header">
+              <h3>Carrito de ventas</h3>
+              <span class="tag warning">Activo</span>
+            </div>
+
+            <div id="cart" class="cart-items">
+              <p class="empty-cart">No hay productos agregados.</p>
+            </div>
+
+            <div class="cart-summary">
+              <p>Subtotal: <strong>S/ <span id="subtotal">0.00</span></strong></p>
+              <p>IGV (18%): <strong>S/ <span id="igv">0.00</span></strong></p>
+              <h3>Total: S/ <span id="total">0.00</span></h3>
+
+              <div class="form-group">
+                <label for="pago">Método de pago</label>
+                <select id="pago">
+                  <option value="">Seleccione método de pago</option>
+                  <option>Efectivo</option>
+                  <option>Tarjeta</option>
+                  <option>Yape</option>
+                </select>
+              </div>
+
+              <button class="btn-primary full" onclick="confirmarVenta()">Confirmar venta</button>
+              <p id="mensajeVenta" class="message"></p>
+            </div>
+          </div>
+
+
+                      <div class="cards">
+              <div class="card stat-card">
+                <div>
+                  <p>Caja del día</p>
+                  <h3 id="cajaDiaTotal">S/ 0.00</h3>
+                </div>
+                <span class="emoji">💵</span>
+              </div>
+
+              <div class="card stat-card">
+                <div>
+                  <p>Ventas del día</p>
+                  <h3 id="cajaDiaCantidad">0</h3>
+                </div>
+                <span class="emoji">🧾</span>
+              </div>
+            </div>
+
+
+                  <div class="card">
+            <div class="card-header">
+              <h3>Últimas ventas</h3>
+              <span class="tag">Historial</span>
+            </div>
+
+            <table id="tablaVentas">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Fecha</th>
+                  <th>Vendedor</th>
+                  <th>Origen</th>
+                  <th>Total</th>
+                  <th>Pago</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- USUARIOS -->
+        <section id="usuarios" class="section">
+          <div class="section-header">
+            <div>
+              <h2>Gestión de Usuarios</h2>
+              <p>Crear, registrar y eliminar usuarios del sistema</p>
+            </div>
+          </div>
+
+          <div class="card form-card" id="userAdminPanel">
+            <h3>Registrar nuevo usuario</h3>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="nuevoNombre">Nombre completo</label>
+                <input type="text" id="nuevoNombre" placeholder="Ej. Carlos Rojas">
+              </div>
+
+              <div class="form-group">
+                <label for="nuevoUsuario">Nombre de usuario</label>
+                <input type="text" id="nuevoUsuario" placeholder="Ej. crojas">
+              </div>
+
+              <div class="form-group">
+                <label for="nuevoPassword">Contraseña</label>
+                <input type="password" id="nuevoPassword" placeholder="Mínimo 6 caracteres">
+              </div>
+
+              <div class="form-group">
+                <label for="nuevoRol">Rol</label>
+                <select id="nuevoRol">
+                  <option value="">Seleccione</option>
+                  <option value="admin">Administrador</option>
+                  <option value="vendedor">Vendedor</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width">
+                <button class="btn-primary" onclick="registrarUsuario()">Guardar usuario</button>
+              </div>
+            </div>
+
+            <p id="mensajeUsuario" class="message"></p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Listado de usuarios</h3>
+              <span class="tag">Sistema</span>
+            </div>
+
+            <table id="tablaUsuarios">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="usuariosBody"></tbody>
+            </table>
+
+            <p id="userAccessMessage" class="message"></p>
+          </div>
+        </section>
+
+        <!-- PROVEEDORES -->
+         <section id="proveedores" class="section">
+  <div class="section-header">
+    <div>
+      <h2>Gestión de Proveedores</h2>
+      <p>Control de proveedores, órdenes de compra, facturas y alertas de stock</p>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card stat-card">
+      <div>
+        <p>Proveedores registrados</p>
+        <h3 id="totalProveedores">0</h3>
+      </div>
+      <span class="emoji">🏢</span>
+    </div>
+
+    <div class="card stat-card">
+      <div>
+        <p>Órdenes de compra</p>
+        <h3 id="totalOrdenesCompra">0</h3>
+      </div>
+      <span class="emoji">📦</span>
+    </div>
+
+    <div class="card stat-card">
+      <div>
+        <p>Facturas pendientes</p>
+        <h3 id="facturasPendientes">0</h3>
+      </div>
+      <span class="emoji">🧾</span>
+    </div>
+
+    <div class="card stat-card">
+      <div>
+        <p>Alertas de stock</p>
+        <h3 id="alertasStockProveedor">0</h3>
+      </div>
+      <span class="emoji">⚠️</span>
+    </div>
+  </div>
+
+  <div class="sales-grid">
+    <div class="card form-card">
+      <h3>Registrar proveedor</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Razón social</label>
+          <input type="text" id="proveedorNombre" placeholder="Ej. Textiles Lima S.A.C.">
+        </div>
+
+        <div class="form-group">
+          <label>RUC</label>
+          <input type="text" id="proveedorRuc" placeholder="Ej. 20123456789">
+        </div>
+
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" id="proveedorTelefono" placeholder="Ej. 999 999 999">
+        </div>
+
+        <div class="form-group">
+          <label>Correo</label>
+          <input type="email" id="proveedorCorreo" placeholder="proveedor@correo.com">
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="registrarProveedor()">Guardar proveedor</button>
+      <p id="mensajeProveedor" class="message"></p>
+    </div>
+
+    <div class="card form-card">
+  <h3>Registrar orden de compra</h3>
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Proveedor</label>
+      <select id="ordenProveedor"></select>
+    </div>
+
+          <div class="form-group">
+            <label>Producto</label>
+            <input type="text" id="ordenProducto" placeholder="Ej. Polo Oversize">
+          </div>
+
+          <div class="form-group">
+            <label>Cantidad</label>
+            <input type="number" id="ordenCantidad" placeholder="Ej. 50">
+          </div>
+
+          <div class="form-group">
+            <label>Costo unitario</label>
+            <input type="number" id="ordenCostoUnitario" placeholder="Ej. 18.50" step="0.01">
+          </div>
+        </div>
+
+        <button class="btn-secondary" onclick="agregarProductoOrdenCompra()">
+          Agregar producto
+        </button>
+
+        <div id="ordenCompraItems" class="cart-items" style="margin-top:15px;">
+          <p class="empty-cart">No hay productos agregados a la orden.</p>
+        </div>
+
+        <div class="cart-summary">
+          <h3>Total orden: S/ <span id="ordenCompraTotal">0.00</span></h3>
+        </div>
+
+        <button class="btn-primary full" onclick="registrarOrdenCompra()">
+          Registrar orden de compra
+        </button>
+
+        <p id="mensajeOrdenCompra" class="message"></p>
+      </div>
+  </div>
+
+  <div class="sales-grid" style="margin-top:20px;">
+    <div class="card">
+      <div class="card-header">
+        <h3>Listado de proveedores</h3>
+        <span class="tag">Activos</span>
+      </div>
+
+      <table id="tablaProveedores">
+        <thead>
+          <tr>
+            <th>Razón social</th>
+            <th>RUC</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Órdenes de compra</h3>
+        <span class="tag">Compras</span>
+      </div>
+
+      <table id="tablaOrdenesCompra">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Proveedor</th>
+            <th>Productos</th>
+            <th>Total</th>
+            <th>Factura</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+      <!-- REPORTES -->
+        <section id="reportes" class="section">
+
+           <div class="card" style="margin-bottom:20px;">
+          <div class="card-header">
+            <h3>Exportar informes</h3>
+            <span class="tag">PDF / Excel</span>
+          </div>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="btn-primary" onclick="descargarReportePDF()">Descargar PDF</button>
+            <button class="btn-secondary" onclick="descargarReporteExcel()">Descargar Excel</button>
+          </div>
+        </div>
+
+          <div class="section-header">
+            <div>
+              <h2>Reportes</h2>
+              <p>Indicadores y análisis del negocio</p>
+            </div>
+          </div>
+
+          <div class="cards">
+            <div class="card info-card">
+              <h3>Producto más vendido</h3>
+              <p id="reporteProductoTop">Sin datos disponibles.</p>
+            </div>
+
+            <div class="card info-card">
+              <h3>Color más vendido</h3>
+              <p id="reporteColorTop">Sin datos disponibles.</p>
+            </div>
+
+            <div class="card info-card">
+              <h3>Talla más vendida</h3>
+              <p id="reporteTallaTop">Sin datos disponibles.</p>
+            </div>
+
+            <div class="card info-card">
+              <h3>Método de pago más usado</h3>
+              <p id="reportePagoTop">Sin datos disponibles.</p>
+            </div>
+          </div>
+
+          <div class="sales-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Resumen de ventas</h3>
+                <span class="tag">General</span>
+              </div>
+              <table id="tablaResumenVentas">
+                <thead>
+                  <tr>
+                    <th>Indicador</th>
+                    <th>Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ventas completadas</td>
+                    <td id="reporteVentasCompletadas">0</td>
+                  </tr>
+                  <tr>
+                    <td>Ventas anuladas</td>
+                    <td id="reporteVentasAnuladas">0</td>
+                  </tr>
+                  <tr>
+                    <td>Total vendido</td>
+                    <td id="reporteTotalVendido">S/ 0.00</td>
+                  </tr>
+                  <tr>
+                    <td>Total de productos vendidos</td>
+                    <td id="reporteTotalProductosVendidos">0</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Alertas de inventario</h3>
+                <span class="tag warning">Stock</span>
+              </div>
+              <div id="reporteAlertasInventario">
+                <p class="empty-cart">No hay alertas disponibles.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+          <!-- MENSAJES -->
+        <section id="mensajes" class="section">
+          <div class="section-header">
+            <div>
+              <h2>Mensajes de contacto</h2>
+              <p>Solicitudes y consultas enviadas desde el formulario público</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Bandeja de mensajes</h3>
+              <span class="tag">Contacto</span>
+            </div>
+
+            <table id="tablaMensajesContacto">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Correo</th>
+                  <th>Mensaje</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/usuarios.js"></script>
+  <script src="js/productos.js"></script>
+  <script src="js/ventas.js"></script>
+  <script src="js/dashboard.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+  <script src="js/reportes.js"></script>
+
+  <script src="js/proveedores.js"></script>
+  <script src="js/mensajes.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

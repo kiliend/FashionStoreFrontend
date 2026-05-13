@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FashionStore - Catálogo</title>
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar section" style="padding-bottom: 20px;">
+    <div class="logo">FashionStore</div>
+
+    <div class="nav-links">
+      <a href="landing.html">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="carrito.html">Carrito</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="index.html" class="btn-nav" id="navSesion">Ingresar</a>
+      <button id="btnCerrarSesionPublica" class="btn-secondary" onclick="cerrarSesionPublica()" style="display:none;">
+      Salir
+      </button>
+    </div>
+  </nav>
+
+  <section class="section" style="padding-top: 20px;">
+    <div class="section-title">
+      <h2>Catálogo</h2>
+      <p>Explora nuestros productos disponibles</p>
+    </div>
+
+    <div class="promo-grid" style="margin-bottom: 30px;">
+      <div class="promo-card">
+        <label for="filtroCategoria"><strong>Categoría</strong></label>
+        <select id="filtroCategoria" onchange="filtrarCatalogo()">
+          <option value="">Todas</option>
+          <option value="Ropa">Ropa</option>
+          <option value="Calzado">Calzado</option>
+          <option value="Accesorio">Accesorio</option>
+        </select>
+      </div>
+
+      <div class="promo-card">
+        <label for="filtroColor"><strong>Color</strong></label>
+        <select id="filtroColor" onchange="filtrarCatalogo()">
+          <option value="">Todos</option>
+          <option value="Negro">Negro</option>
+          <option value="Blanco">Blanco</option>
+          <option value="Rojo">Rojo</option>
+          <option value="Azul">Azul</option>
+          <option value="Verde">Verde</option>
+          <option value="Rosado">Rosado</option>
+          <option value="Gris">Gris</option>
+          <option value="Marrón">Marrón</option>
+          <option value="Beige">Beige</option>
+          <option value="Amarillo">Amarillo</option>
+        </select>
+      </div>
+
+      <div class="promo-card">
+        <label for="filtroTalla"><strong>Talla</strong></label>
+        <select id="filtroTalla" onchange="filtrarCatalogo()">
+          <option value="">Todas</option>
+          <option>XS</option>
+          <option>S</option>
+          <option>M</option>
+          <option>L</option>
+          <option>XL</option>
+          <option>XXL</option>
+          <option>35</option>
+          <option>36</option>
+          <option>37</option>
+          <option>38</option>
+          <option>39</option>
+          <option>40</option>
+          <option>41</option>
+          <option>42</option>
+          <option>43</option>
+          <option>44</option>
+          <option>Única</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="product-grid" id="catalogoContainer"></div>
+  </section>
+
+  <footer class="footer">
+    <p>© 2026 FashionStore - Catálogo</p>
+  </footer>
+
+  <script src="js/catalogo.js"></script>
+  <script src="js/navSesion.js"></script>
+</body>
+</html>
