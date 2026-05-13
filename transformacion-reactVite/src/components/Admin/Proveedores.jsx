@@ -1,3 +1,4 @@
+//src\components\Admin\Proveedores.jsx
 import React, { useState, useEffect } from 'react';
 import { getProveedores, setProveedores, getOrdenesCompra, setOrdenesCompra, getProductos, setProductos } from '../../lib/storage';
 
