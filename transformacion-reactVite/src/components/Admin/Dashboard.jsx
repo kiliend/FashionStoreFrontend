@@ -1,3 +1,4 @@
+// src\components\Admin\Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { getProductos, getVentas } from '../../lib/storage';
 
