@@ -17,17 +17,17 @@ const Navbar = () => {
     if (isAuthenticated && currentRole === 'cliente') {
       return { text: `Hola, ${currentUser}`, href: '/carrito' };
     }
-    if (isAuthenticated && currentRole !== 'cliente') {
+    if (isAuthenticated && (currentRole === 'admin' || currentRole === 'vendedor')) {
       return { text: 'Panel', href: '/admin' };
     }
-    return { text: 'Ingresar', href: '/admin' };
+    return { text: 'Ingresar', href: '/login' };
   };
 
   const navLink = getNavLink();
 
   return (
     <nav className="flex justify-between items-center gap-4 flex-wrap py-5 px-[8%]">
-      <div className="text-3xl font-extrabold text-[#b83267]">FashionStore</div>
+      <Link to="/" className="text-3xl font-extrabold text-[#b83267]">FashionStore</Link>
       
       <div className="flex items-center gap-4 flex-wrap">
         <Link to="/" className="font-semibold hover:text-[#d9467a] transition">Inicio</Link>
@@ -36,7 +36,7 @@ const Navbar = () => {
         <Link to="/contacto" className="font-semibold hover:text-[#d9467a] transition">Contacto</Link>
         
         {isAuthenticated && currentRole === 'cliente' && (
-          <button onClick={handleLogout} className="btn-secondary">
+          <button onClick={handleLogout} className="bg-white text-[#b83267] border border-[#f1d7e1] font-bold py-2 px-4 rounded-xl transition-all hover:bg-[#fff0f5]">
             Salir
           </button>
         )}
