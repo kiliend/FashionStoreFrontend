@@ -16,7 +16,8 @@ const Carrito = () => {
   }, []);
 
   const cargarCarrito = () => {
-    setCarrito(getCarritoLanding());
+    const carritoData = getCarritoLanding();
+    setCarrito(carritoData);
   };
 
   const eliminarItem = (index) => {
@@ -49,7 +50,7 @@ const Carrito = () => {
     if (!isAuthenticated) {
       localStorage.setItem('redirectAfterLogin', '/carrito');
       setMensaje('Debe iniciar sesión o crear una cuenta para solicitar la compra.');
-      setTimeout(() => navigate('/admin'), 1500);
+      setTimeout(() => navigate('/login'), 1500);
       return;
     }
     
@@ -80,6 +81,7 @@ const Carrito = () => {
       fecha: new Date().toLocaleString(),
       fechaISO: new Date().toISOString(),
       cliente: currentUser,
+      vendedor: currentUser,
       origen: 'ecommerce',
       items: [...carrito],
       subtotal,
@@ -90,13 +92,17 @@ const Carrito = () => {
     };
     
     const ventas = getVentas();
-    setVentas([nuevaVenta, ...ventas]);
+    const nuevasVentas = [nuevaVenta, ...ventas];
+    setVentas(nuevasVentas);
     setProductos(nuevosProductos);
     setCarritoLanding([]);
     setCarrito([]);
     setMensaje('Solicitud de compra registrada correctamente.');
     
-    setTimeout(() => setMensaje(''), 3000);
+    setTimeout(() => {
+      setMensaje('');
+      navigate('/');
+    }, 2000);
   };
 
   const { subtotal, igv, total } = calcularTotales();
@@ -125,10 +131,25 @@ const Carrito = () => {
                     <p className="font-semibold">S/ {item.precio.toFixed(2)} c/u</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <button onClick={() => actualizarCantidad(idx, item.cantidad - 1)} className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold">-</button>
+                    <button 
+                      onClick={() => actualizarCantidad(idx, item.cantidad - 1)} 
+                      className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold hover:bg-[#f5c8d7] transition"
+                    >
+                      -
+                    </button>
                     <span className="w-12 text-center font-semibold">{item.cantidad}</span>
-                    <button onClick={() => actualizarCantidad(idx, item.cantidad + 1)} className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold">+</button>
-                    <button onClick={() => eliminarItem(idx)} className="btn-danger text-sm py-2 px-3">Eliminar</button>
+                    <button 
+                      onClick={() => actualizarCantidad(idx, item.cantidad + 1)} 
+                      className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold hover:bg-[#f5c8d7] transition"
+                    >
+                      +
+                    </button>
+                    <button 
+                      onClick={() => eliminarItem(idx)} 
+                      className="bg-red-100 text-red-700 font-bold py-2 px-3 rounded-xl transition-all hover:bg-red-200 text-sm"
+                    >
+                      Eliminar
+                    </button>
                   </div>
                   <div className="text-right min-w-[100px]">
                     <p className="font-bold text-[#b83267]">S/ {(item.precio * item.cantidad).toFixed(2)}</p>
@@ -141,15 +162,28 @@ const Carrito = () => {
           {/* Resumen */}
           <div className="lg:border-l lg:border-[#f1d7e1] lg:pl-6">
             <div className="space-y-3">
-              <p className="flex justify-between">Subtotal: <strong>S/ {subtotal.toFixed(2)}</strong></p>
-              <p className="flex justify-between">IGV (18%): <strong>S/ {igv.toFixed(2)}</strong></p>
+              <p className="flex justify-between">
+                Subtotal: <strong>S/ {subtotal.toFixed(2)}</strong>
+              </p>
+              <p className="flex justify-between">
+                IGV (18%): <strong>S/ {igv.toFixed(2)}</strong>
+              </p>
               <div className="border-t border-[#f1d7e1] pt-3 mt-3">
-                <h3 className="text-xl font-bold text-[#b83267] flex justify-between">Total: <span>S/ {total.toFixed(2)}</span></h3>
+                <h3 className="text-xl font-bold text-[#b83267] flex justify-between">
+                  Total: <span>S/ {total.toFixed(2)}</span>
+                </h3>
               </div>
-              <button onClick={finalizarCompra} className="btn-primary w-full mt-4">
+              <button 
+                onClick={finalizarCompra} 
+                className="w-full bg-gradient-to-r from-[#d9467a] to-[#b83267] text-white font-bold py-3 px-5 rounded-xl transition-all hover:opacity-90 mt-4"
+              >
                 Finalizar compra
               </button>
-              {mensaje && <p className={`text-center mt-3 font-semibold ${mensaje.includes('Debe') ? 'text-red-600' : 'text-green-600'}`}>{mensaje}</p>}
+              {mensaje && (
+                <p className={`text-center mt-3 font-semibold ${mensaje.includes('Debe') ? 'text-red-600' : 'text-green-600'}`}>
+                  {mensaje}
+                </p>
+              )}
             </div>
           </div>
         </div>
