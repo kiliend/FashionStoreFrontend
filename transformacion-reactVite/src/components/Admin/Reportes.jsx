@@ -1,3 +1,4 @@
+//src\components\Admin\Reportes.jsx
 import React, { useState, useEffect } from 'react';
 import { getProductos, getVentas } from '../../lib/storage';
 import { jsPDF } from 'jspdf';
