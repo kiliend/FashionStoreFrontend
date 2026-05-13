@@ -1,3 +1,4 @@
+//src\components\Admin\Ventas.jsx
 import React, { useState, useEffect } from 'react';
 import { getProductos, getVentas, setVentas, setProductos } from '../../lib/storage';
 import { useAuth } from '../../contexts/AuthContext';
