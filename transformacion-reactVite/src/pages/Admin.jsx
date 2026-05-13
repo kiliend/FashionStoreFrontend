@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Sidebar from '../components/Layout/Sidebar';
 import Dashboard from '../components/Admin/Dashboard';
@@ -10,12 +10,8 @@ import Proveedores from '../components/Admin/Proveedores';
 import Mensajes from '../components/Admin/Mensajes';
 
 const Admin = () => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, isAdmin, logout } = useAuth();
   const [activeSection, setActiveSection] = useState('dashboard');
-
-  useEffect(() => {
-    // Cargar datos iniciales si es necesario
-  }, []);
 
   const renderSection = () => {
     switch(activeSection) {
@@ -30,12 +26,14 @@ const Admin = () => {
     }
   };
 
+  const userInitial = currentUser ? currentUser.charAt(0).toUpperCase() : 'A';
+  const userRole = isAdmin ? 'Administrador' : 'Vendedor';
+
   return (
     <div className="flex min-h-screen">
       <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
       
       <main className="flex-1 p-4 lg:p-6">
-        {/* Topbar */}
         <div className="bg-white/80 backdrop-blur-md border border-[#f1d7e1] rounded-2xl p-4 shadow-soft mb-6">
           <div className="flex flex-col lg:flex-row justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -54,13 +52,11 @@ const Admin = () => {
               
               <div className="flex items-center gap-3 bg-white px-3 py-2 rounded-xl border border-[#f1d7e1]">
                 <div className="w-10 h-10 rounded-full bg-[#d9467a] text-white flex items-center justify-center font-bold">
-                  {currentUser?.charAt(0).toUpperCase() || 'A'}
+                  {userInitial}
                 </div>
                 <div>
                   <strong>{currentUser || 'Administrador'}</strong>
-                  <small className="block text-[#7a5d68] text-xs">
-                    {useAuth().isAdmin ? 'Administrador' : 'Vendedor'}
-                  </small>
+                  <small className="block text-[#7a5d68] text-xs">{userRole}</small>
                 </div>
               </div>
               
