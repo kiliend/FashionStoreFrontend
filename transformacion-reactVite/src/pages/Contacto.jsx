@@ -1,3 +1,4 @@
+//src\pages\Contacto.jsx
 import React, { useState } from 'react';
 import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/Layout/Footer';
