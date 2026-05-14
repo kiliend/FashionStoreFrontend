@@ -1,293 +1,197 @@
-//src\components\Admin\Reportes.jsx
+// src/components/Admin/Reportes.jsx
 import React, { useState, useEffect } from 'react';
-import { getProductos, getVentas } from '../../lib/storage';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+import { getVentas, getProductos, getUsuarios } from '../../lib/storage';
 
 const Reportes = () => {
-  const [reportes, setReportes] = useState({
-    ventasCompletadas: 0,
-    ventasAnuladas: 0,
-    totalVendido: 0,
-    totalProductosVendidos: 0,
-    productoTop: 'Sin datos',
-    colorTop: 'Sin datos',
-    tallaTop: 'Sin datos',
-    pagoTop: 'Sin datos',
-    alertas: []
-  });
+  const [reporteTipo, setReporteTipo] = useState('ventas');
+  const [ventas, setVentas] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
 
   useEffect(() => {
-    cargarReportes();
+    cargarDatos();
   }, []);
 
-  const cargarReportes = () => {
-    const productos = getProductos();
-    const ventas = getVentas();
-    
-    const ventasCompletadas = ventas.filter(v => v.estado === 'completada');
-    const ventasAnuladas = ventas.filter(v => v.estado === 'anulada');
-    const totalVendido = ventasCompletadas.reduce((acc, v) => acc + v.total, 0);
-    const totalProductosVendidos = ventasCompletadas.reduce((acc, v) => 
-      acc + v.items.reduce((sum, item) => sum + item.cantidad, 0), 0);
-    
-    // Top producto
-    const productoContador = {};
-    ventasCompletadas.forEach(v => {
-      v.items.forEach(item => {
-        productoContador[item.nombre] = (productoContador[item.nombre] || 0) + item.cantidad;
-      });
-    });
-    const productoTop = Object.entries(productoContador).length > 0 
-      ? Object.entries(productoContador).reduce((a, b) => a[1] > b[1] ? a : b)[0]
-      : 'Sin datos';
-    
-    // Top color
-    const colorContador = {};
-    ventasCompletadas.forEach(v => {
-      v.items.forEach(item => {
-        colorContador[item.color] = (colorContador[item.color] || 0) + item.cantidad;
-      });
-    });
-    const colorTop = Object.entries(colorContador).length > 0
-      ? Object.entries(colorContador).reduce((a, b) => a[1] > b[1] ? a : b)[0]
-      : 'Sin datos';
-    
-    // Top talla
-    const tallaContador = {};
-    ventasCompletadas.forEach(v => {
-      v.items.forEach(item => {
-        tallaContador[item.talla] = (tallaContador[item.talla] || 0) + item.cantidad;
-      });
-    });
-    const tallaTop = Object.entries(tallaContador).length > 0
-      ? Object.entries(tallaContador).reduce((a, b) => a[1] > b[1] ? a : b)[0]
-      : 'Sin datos';
-    
-    // Top método de pago
-    const pagoContador = {};
-    ventasCompletadas.forEach(v => {
-      pagoContador[v.metodoPago] = (pagoContador[v.metodoPago] || 0) + 1;
-    });
-    const pagoTop = Object.entries(pagoContador).length > 0
-      ? Object.entries(pagoContador).reduce((a, b) => a[1] > b[1] ? a : b)[0]
-      : 'Sin datos';
-    
-    // Alertas de inventario
-    const alertas = productos.filter(p => p.estado === 'activo' && p.stock <= 5);
-    
-    setReportes({
-      ventasCompletadas: ventasCompletadas.length,
-      ventasAnuladas: ventasAnuladas.length,
-      totalVendido,
-      totalProductosVendidos,
-      productoTop,
-      colorTop,
-      tallaTop,
-      pagoTop,
-      alertas
-    });
+  const cargarDatos = () => {
+    setVentas(getVentas());
+    setProductos(getProductos());
+    setUsuarios(getUsuarios());
   };
 
-  const generarDatosCompletos = () => {
-    const ventas = getVentas();
-    const productos = getProductos();
-    const ventasCompletadas = ventas.filter(v => v.estado === 'completada');
+  const generarReporteVentas = () => {
+    const totalVentas = ventas.length;
+    const ingresosTotales = ventas.reduce((sum, v) => sum + (v.total || 0), 0);
+    const ventasPorMes = {};
     
-    // Ventas por producto
-    const ventasPorProducto = {};
-    ventasCompletadas.forEach(v => {
-      v.items.forEach(item => {
-        if (!ventasPorProducto[item.nombre]) {
-          ventasPorProducto[item.nombre] = { cantidad: 0, total: 0 };
-        }
-        ventasPorProducto[item.nombre].cantidad += item.cantidad;
-        ventasPorProducto[item.nombre].total += item.precio * item.cantidad;
-      });
+    ventas.forEach(v => {
+      if (v.fechaISO) {
+        const mes = v.fechaISO.substring(0, 7);
+        ventasPorMes[mes] = (ventasPorMes[mes] || 0) + 1;
+      }
     });
     
-    return {
-      resumen: [
-        ['Ventas completadas', reportes.ventasCompletadas],
-        ['Ventas anuladas', reportes.ventasAnuladas],
-        ['Total general vendido', `S/ ${reportes.totalVendido.toFixed(2)}`],
-        ['Total productos vendidos', reportes.totalProductosVendidos],
-        ['Producto más vendido', reportes.productoTop],
-        ['Color más vendido', reportes.colorTop],
-        ['Talla más vendida', reportes.tallaTop],
-        ['Método de pago más usado', reportes.pagoTop]
-      ],
-      ventasPorProducto: Object.entries(ventasPorProducto).map(([nombre, data]) => ({
-        producto: nombre,
-        cantidad: data.cantidad,
-        total: data.total
-      })),
-      productos: productos.map(p => ({
-        nombre: p.nombre,
-        categoria: p.categoria,
-        color: p.color,
-        talla: p.talla,
-        stock: p.stock,
-        precio: p.precio,
-        estado: p.estado
-      }))
-    };
+    return { totalVentas, ingresosTotales, ventasPorMes };
   };
 
-  const descargarPDF = () => {
-    const doc = new jsPDF();
-    const datos = generarDatosCompletos();
+  const generarReporteProductos = () => {
+    const totalProductos = productos.length;
+    const productosActivos = productos.filter(p => p.estado === 'activo').length;
+    const stockTotal = productos.reduce((sum, p) => sum + (p.stock || 0), 0);
+    const productosBajoStock = productos.filter(p => p.stock <= (p.stockMinimo || 5)).length;
     
-    doc.setFontSize(16);
-    doc.text('Informe General de Ventas - FashionStore', 14, 15);
-    doc.setFontSize(10);
-    doc.text(`Fecha: ${new Date().toLocaleString()}`, 14, 22);
-    
-    doc.autoTable({
-      startY: 30,
-      head: [['Indicador', 'Valor']],
-      body: datos.resumen
-    });
-    
-    doc.autoTable({
-      startY: doc.lastAutoTable.finalY + 10,
-      head: [['Producto', 'Cantidad vendida', 'Total vendido']],
-      body: datos.ventasPorProducto.map(item => [item.producto, item.cantidad, `S/ ${item.total.toFixed(2)}`])
-    });
-    
-    doc.addPage();
-    doc.setFontSize(14);
-    doc.text('Inventario de Productos', 14, 15);
-    
-    doc.autoTable({
-      startY: 22,
-      head: [['Producto', 'Categoría', 'Color', 'Talla', 'Stock', 'Precio', 'Estado']],
-      body: datos.productos.map(p => [p.nombre, p.categoria, p.color, p.talla, p.stock, `S/ ${p.precio.toFixed(2)}`, p.estado])
-    });
-    
-    doc.save('informe_fashionstore.pdf');
+    return { totalProductos, productosActivos, stockTotal, productosBajoStock };
   };
 
-  const descargarExcel = () => {
-    const datos = generarDatosCompletos();
-    const wb = XLSX.utils.book_new();
+  const generarReporteUsuarios = () => {
+    const totalUsuarios = usuarios.length;
+    const porRol = {};
+    usuarios.forEach(u => {
+      porRol[u.rol] = (porRol[u.rol] || 0) + 1;
+    });
     
-    // Hoja resumen
-    const resumenData = [
-      ['INFORME GENERAL DE VENTAS - FASHIONSTORE'],
-      [`Fecha: ${new Date().toLocaleString()}`],
-      [],
-      ['RESUMEN GENERAL'],
-      ...datos.resumen
-    ];
-    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
-    wsResumen['!cols'] = [{ wch: 30 }, { wch: 25 }];
-    XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
-    
-    // Hoja ventas por producto
-    const wsVentas = XLSX.utils.json_to_sheet(datos.ventasPorProducto);
-    XLSX.utils.book_append_sheet(wb, wsVentas, 'Ventas por producto');
-    
-    // Hoja inventario
-    const wsInventario = XLSX.utils.json_to_sheet(datos.productos);
-    XLSX.utils.book_append_sheet(wb, wsInventario, 'Inventario');
-    
-    XLSX.writeFile(wb, 'informe_fashionstore.xlsx');
+    return { totalUsuarios, porRol };
   };
+
+  const descargarReporte = () => {
+    let datos = {};
+    let nombreArchivo = '';
+    
+    if (reporteTipo === 'ventas') {
+      datos = generarReporteVentas();
+      nombreArchivo = `reporte_ventas_${new Date().toISOString().split('T')[0]}.json`;
+    } else if (reporteTipo === 'productos') {
+      datos = generarReporteProductos();
+      nombreArchivo = `reporte_productos_${new Date().toISOString().split('T')[0]}.json`;
+    } else {
+      datos = generarReporteUsuarios();
+      nombreArchivo = `reporte_usuarios_${new Date().toISOString().split('T')[0]}.json`;
+    }
+    
+    const dataStr = JSON.stringify(datos, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', nombreArchivo);
+    linkElement.click();
+  };
+
+  const reporteVentas = generarReporteVentas();
+  const reporteProductos = generarReporteProductos();
+  const reporteUsuarios = generarReporteUsuarios();
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-2xl lg:text-3xl font-bold">Reportes</h2>
-        <p className="text-[#7a5d68]">Indicadores y análisis del negocio</p>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center flex-wrap gap-3">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setReporteTipo('ventas')}
+            className={`px-4 py-2 rounded-xl font-semibold transition ${reporteTipo === 'ventas' ? 'btn-primary' : 'bg-gray-100 text-gray-700'}`}
+          >
+            Ventas
+          </button>
+          <button
+            onClick={() => setReporteTipo('productos')}
+            className={`px-4 py-2 rounded-xl font-semibold transition ${reporteTipo === 'productos' ? 'btn-primary' : 'bg-gray-100 text-gray-700'}`}
+          >
+            Productos
+          </button>
+          <button
+            onClick={() => setReporteTipo('usuarios')}
+            className={`px-4 py-2 rounded-xl font-semibold transition ${reporteTipo === 'usuarios' ? 'btn-primary' : 'bg-gray-100 text-gray-700'}`}
+          >
+            Usuarios
+          </button>
+        </div>
+        <button onClick={descargarReporte} className="btn-primary">
+          📥 Descargar Reporte
+        </button>
       </div>
       
-      {/* Botones de exportación */}
-      <div className="card mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="font-bold text-lg">Exportar informes</h3>
-          <span className="tag">PDF / Excel</span>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={descargarPDF} className="btn-primary">Descargar PDF</button>
-          <button onClick={descargarExcel} className="btn-secondary">Descargar Excel</button>
-        </div>
-      </div>
-      
-      {/* Indicadores */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+      {reporteTipo === 'ventas' && (
         <div className="card">
-          <h3 className="font-bold mb-2">Producto más vendido</h3>
-          <p className="text-[#7a5d68]">{reportes.productoTop}</p>
-        </div>
-        <div className="card">
-          <h3 className="font-bold mb-2">Color más vendido</h3>
-          <p className="text-[#7a5d68]">{reportes.colorTop}</p>
-        </div>
-        <div className="card">
-          <h3 className="font-bold mb-2">Talla más vendida</h3>
-          <p className="text-[#7a5d68]">{reportes.tallaTop}</p>
-        </div>
-        <div className="card">
-          <h3 className="font-bold mb-2">Método de pago más usado</h3>
-          <p className="text-[#7a5d68]">{reportes.pagoTop}</p>
-        </div>
-      </div>
-      
-      {/* Resumen de ventas y alertas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-lg">Resumen de ventas</h3>
-            <span className="tag">General</span>
-          </div>
-          
-          <table>
-            <tbody>
-              <tr className="border-b border-[#f1d7e1]">
-                <td className="py-2 font-semibold">Ventas completadas</td>
-                <td className="py-2 text-right">{reportes.ventasCompletadas}</td>
-              </tr>
-              <tr className="border-b border-[#f1d7e1]">
-                <td className="py-2 font-semibold">Ventas anuladas</td>
-                <td className="py-2 text-right">{reportes.ventasAnuladas}</td>
-              </tr>
-              <tr className="border-b border-[#f1d7e1]">
-                <td className="py-2 font-semibold">Total vendido</td>
-                <td className="py-2 text-right text-[#b83267] font-bold">S/ {reportes.totalVendido.toFixed(2)}</td>
-              </tr>
-              <tr className="border-b border-[#f1d7e1]">
-                <td className="py-2 font-semibold">Total de productos vendidos</td>
-                <td className="py-2 text-right">{reportes.totalProductosVendidos}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-lg">Alertas de inventario</h3>
-            <span className="tag tag-warning">Stock</span>
-          </div>
-          
-          {reportes.alertas.length === 0 ? (
-            <p className="text-[#7a5d68] text-center py-4">No hay alertas disponibles.</p>
-          ) : (
-            <div className="space-y-3">
-              {reportes.alertas.map((producto, idx) => (
-                <div key={idx} className="flex justify-between items-center p-3 bg-[#fff8fb] rounded-xl border border-[#f1d7e1]">
-                  <div>
-                    <h4 className="font-bold">{producto.stock === 0 ? 'Sin stock' : 'Stock bajo'}</h4>
-                    <p className="text-sm">{producto.nombre} - {producto.color} - {producto.talla}</p>
-                  </div>
-                  <strong className="text-amber-600">{producto.stock} und.</strong>
-                </div>
-              ))}
+          <h3 className="text-xl font-bold mb-4">Reporte de Ventas</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="p-4 bg-blue-50 rounded-xl">
+              <p className="text-sm text-blue-700">Total de Ventas</p>
+              <p className="text-3xl font-bold">{reporteVentas.totalVentas}</p>
             </div>
-          )}
+            <div className="p-4 bg-green-50 rounded-xl">
+              <p className="text-sm text-green-700">Ingresos Totales</p>
+              <p className="text-3xl font-bold">S/ {reporteVentas.ingresosTotales.toFixed(2)}</p>
+            </div>
+          </div>
+          
+          <h4 className="font-bold mb-3">Ventas por Mes</h4>
+          <div className="space-y-2">
+            {Object.entries(reporteVentas.ventasPorMes).length === 0 ? (
+              <p className="text-[#7a5d68]">No hay datos</p>
+            ) : (
+              Object.entries(reporteVentas.ventasPorMes).map(([mes, total]) => (
+                <div key={mes} className="flex items-center gap-3">
+                  <span className="w-32">{mes}</span>
+                  <div className="flex-1 bg-gray-200 rounded-full h-4 overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-[#d9467a] to-[#b83267] h-full rounded-full"
+                      style={{ width: `${Math.min((total / Math.max(...Object.values(reporteVentas.ventasPorMes))) * 100, 100)}%` }}
+                    ></div>
+                  </div>
+                  <span>{total} ventas</span>
+                </div>
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
+      
+      {reporteTipo === 'productos' && (
+        <div className="card">
+          <h3 className="text-xl font-bold mb-4">Reporte de Productos</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 bg-purple-50 rounded-xl">
+              <p className="text-sm text-purple-700">Total Productos</p>
+              <p className="text-2xl font-bold">{reporteProductos.totalProductos}</p>
+            </div>
+            <div className="p-4 bg-green-50 rounded-xl">
+              <p className="text-sm text-green-700">Productos Activos</p>
+              <p className="text-2xl font-bold">{reporteProductos.productosActivos}</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-xl">
+              <p className="text-sm text-blue-700">Stock Total</p>
+              <p className="text-2xl font-bold">{reporteProductos.stockTotal}</p>
+            </div>
+            <div className="p-4 bg-red-50 rounded-xl">
+              <p className="text-sm text-red-700">Stock Bajo</p>
+              <p className="text-2xl font-bold">{reporteProductos.productosBajoStock}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {reporteTipo === 'usuarios' && (
+        <div className="card">
+          <h3 className="text-xl font-bold mb-4">Reporte de Usuarios</h3>
+          <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+            <p className="text-sm text-gray-700">Total de Usuarios</p>
+            <p className="text-3xl font-bold">{reporteUsuarios.totalUsuarios}</p>
+          </div>
+          
+          <h4 className="font-bold mb-3">Distribución por Rol</h4>
+          <div className="space-y-3">
+            {Object.entries(reporteUsuarios.porRol).map(([rol, cantidad]) => (
+              <div key={rol} className="flex items-center gap-3">
+                <span className="w-32 capitalize">{rol.replace('_', ' ')}</span>
+                <div className="flex-1 bg-gray-200 rounded-full h-4 overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-[#d9467a] to-[#b83267] h-full rounded-full"
+                    style={{ width: `${(cantidad / reporteUsuarios.totalUsuarios) * 100}%` }}
+                  ></div>
+                </div>
+                <span>{cantidad} usuarios ({((cantidad / reporteUsuarios.totalUsuarios) * 100).toFixed(1)}%)</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
