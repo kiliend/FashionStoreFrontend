@@ -1,26 +1,29 @@
+// src/components/Layout/Sidebar.jsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Sidebar = ({ activeSection, onSectionChange }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { isAdmin, isVendedor } = useAuth();
+  const { isSuperAdmin, isAdmin, isVendedor, isAlmacenero } = useAuth();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊', visible: true },
-    { id: 'productos', label: 'Productos', icon: '👗', visible: true },
-    { id: 'ventas', label: 'Ventas', icon: '🛍️', visible: true },
-    { id: 'usuarios', label: 'Usuarios', icon: '👤', visible: isAdmin },
-    { id: 'reportes', label: 'Reportes', icon: '📈', visible: isAdmin },
-    { id: 'proveedores', label: 'Proveedores', icon: '🚚', visible: isAdmin },
-    { id: 'mensajes', label: 'Mensajes', icon: '📩', visible: isAdmin },
+    { id: 'analytics', label: 'Analytics', icon: '📈', visible: isSuperAdmin || isAdmin },
+    { id: 'productos', label: 'Productos', icon: '👗', visible: isAdmin || isVendedor || isAlmacenero },
+    { id: 'stock', label: 'Gestión de Stock', icon: '📦', visible: isAdmin || isAlmacenero },
+    { id: 'ventas', label: 'Ventas', icon: '🛍️', visible: isAdmin || isVendedor },
+    { id: 'usuarios', label: 'Usuarios', icon: '👤', visible: isSuperAdmin || isAdmin },
+    { id: 'proveedores', label: 'Proveedores', icon: '🚚', visible: isAdmin || isAlmacenero },
+    { id: 'ordenesCompra', label: 'Órdenes de Compra', icon: '📋', visible: isAdmin || isAlmacenero },
+    { id: 'mensajes', label: 'Mensajes', icon: '📩', visible: isSuperAdmin || isAdmin },
+    { id: 'logs', label: 'Logs del Sistema', icon: '📜', visible: isSuperAdmin },
+    { id: 'respaldos', label: 'Respaldos', icon: '💾', visible: isSuperAdmin },
+    { id: 'reportes', label: 'Reportes', icon: '📊', visible: isAdmin },
   ];
 
   const visibleItems = menuItems.filter(item => item.visible);
   
-  const finalItems = isVendedor 
-    ? visibleItems.filter(item => item.id === 'dashboard' || item.id === 'ventas')
-    : visibleItems;
-
   return (
     <>
       <button 
@@ -37,12 +40,12 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
           </div>
           <div>
             <h2 className="font-bold">FashionStore</h2>
-            <p className="text-sm text-[#f5c8d7]">Panel de administración</p>
+            <p className="text-sm text-[#f5c8d7]">Sistema Integrado</p>
           </div>
         </div>
         
         <nav className="flex flex-col gap-2">
-          {finalItems.map((item) => (
+          {visibleItems.map((item) => (
             <button
               key={item.id}
               onClick={() => {
@@ -56,10 +59,10 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
             </button>
           ))}
           
-          <a href="/" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all mt-4 bg-[#e0f2fe] text-[#0369a1]">
+          <Link to="/" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all mt-4">
             <span>🏠</span>
-            <span>Inicio</span>
-          </a>
+            <span>Ir a la tienda</span>
+          </Link>
         </nav>
       </aside>
     </>
