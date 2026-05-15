@@ -19,6 +19,15 @@ const Catalogo = () => {
     cargarProductos();
   }, []);
 
+    //UseEffect:
+  useEffect(() => {
+    if (isAuthenticated) {
+      const wishlistData = getWishlist();
+      setWishlistState(wishlistData.map(w => w.productoId));
+    }
+  }, [isAuthenticated]);
+
+
   const cargarProductos = () => {
     const productosData = getProductos();
     setProductos(productosData.filter(p => p.estado === 'activo'));
