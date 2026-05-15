@@ -260,3 +260,8 @@ export const setChatMensajes = (data) => setStorage(STORAGE_KEYS_EXTRA.CHAT_MENS
 // Suscripciones
 export const getSuscripciones = () => getStorage(STORAGE_KEYS_EXTRA.SUSCRIPCIONES, []);
 export const setSuscripciones = (data) => setStorage(STORAGE_KEYS_EXTRA.SUSCRIPCIONES, data);
+
+
+// Notificaciones usuario
+export const getNotificacionesUsuario = () => getStorage(STORAGE_KEYS_EXTRA.NOTIFICACIONES_USUARIO, []);
+export const setNotificacionesUsuario = (data) => setStorage(STORAGE_KEYS_EXTRA.NOTIFICACIONES_USUARIO, data);
