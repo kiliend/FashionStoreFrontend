@@ -211,6 +211,30 @@ const Carrito = () => {
               <p className="flex justify-between">
                 IGV (18%): <strong>S/ {igv.toFixed(2)}</strong>
               </p>
+     
+              <div className="mt-4">
+                <label className="block font-semibold mb-2">¿Tienes un cupón?</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Código de cupón"
+                    value={codigoCupon}
+                    onChange={(e) => setCodigoCupon(e.target.value)}
+                    className="input-field flex-1"
+                  />
+                  <button onClick={aplicarCupon} className="btn-secondary">
+                    Aplicar
+                  </button>
+                </div>
+                {cuponAplicado && (
+                  <p className="text-green-600 text-sm mt-2">
+                    Cupón {cuponAplicado.codigo} aplicado: -S/ {descuento.toFixed(2)}
+                  </p>
+                )}
+              </div>
+
+
+
               <div className="border-t border-[#f1d7e1] pt-3 mt-3">
                 <h3 className="text-xl font-bold text-[#b83267] flex justify-between">
                   Total: <span>S/ {total.toFixed(2)}</span>
