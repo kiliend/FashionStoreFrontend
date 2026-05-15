@@ -293,3 +293,19 @@ const STORAGE_KEYS_BLOG = {
   BLOG_POSTS: 'blogPosts',
   FAQ: 'faq'
 };
+
+
+export const getBlogPosts = () => getStorage(STORAGE_KEYS_BLOG.BLOG_POSTS, []);
+export const setBlogPosts = (data) => setStorage(STORAGE_KEYS_BLOG.BLOG_POSTS, data);
+
+export const getFaq = () => getStorage(STORAGE_KEYS_BLOG.FAQ, []);
+export const setFaq = (data) => setStorage(STORAGE_KEYS_BLOG.FAQ, data);
+
+// Inicializar FAQ
+if (getFaq().length === 0) {
+  setFaq([
+    { id: 1, pregunta: "¿Cómo realizo una compra?", respuesta: "Puedes navegar por el catálogo, agregar productos al carrito y finalizar la compra.", categoria: "Compras" },
+    { id: 2, pregunta: "¿Cuánto tiempo tarda el envío?", respuesta: "Los envíos demoran entre 3-5 días hábiles.", categoria: "Envíos" },
+    { id: 3, pregunta: "¿Puedo devolver un producto?", respuesta: "Sí, tienes 7 días para realizar devoluciones.", categoria: "Devoluciones" }
+  ]);
+}
