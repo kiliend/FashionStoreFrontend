@@ -8,6 +8,11 @@ import { getCarritoLanding, setCarritoLanding, getProductos, setProductos, getVe
 const Carrito = () => {
   const [carrito, setCarrito] = useState([]);
   const [mensaje, setMensaje] = useState('');
+
+  const [codigoCupon, setCodigoCupon] = useState('');
+  const [cuponAplicado, setCuponAplicado] = useState(null);
+  const [descuento, setDescuento] = useState(0);
+
   const { isAuthenticated, currentUser } = useAuth();
   const navigate = useNavigate();
 

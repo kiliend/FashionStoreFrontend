@@ -15,6 +15,9 @@ const Catalogo = () => {
   const [productos, setProductos] = useState([]);
   const [filtros, setFiltros] = useState({ categoria: '', color: '', talla: '' });
 
+
+  const [reseñasModal, setReseñasModal] = useState(null);
+  const [reseñas, setReseñas] = useState([]);
   useEffect(() => {
     cargarProductos();
   }, []);
@@ -81,33 +84,59 @@ const Catalogo = () => {
   };
 
   // Agregar función para wishlist:
-  const toggleWishlist = (producto) => {
-    if (!isAuthenticated) {
-      alert('Inicia sesión para agregar a favoritos');
-      navigate('/login');
-      return;
-    }
-    
-    const wishlistActual = getWishlist();
-    const existe = wishlistActual.some(w => w.productoId === producto.id);
-    
-    if (existe) {
-      const nuevaWishlist = wishlistActual.filter(w => w.productoId !== producto.id);
-      setWishlist(nuevaWishlist);
-      setWishlistState(prev => prev.filter(id => id !== producto.id));
-      alert('Producto eliminado de favoritos');
-    } else {
-      const nuevoFavorito = {
-        id: Date.now(),
-        productoId: producto.id,
-        usuario: currentUser,
-        fecha: new Date().toLocaleString()
+    const toggleWishlist = (producto) => {
+      if (!isAuthenticated) {
+        alert('Inicia sesión para agregar a favoritos');
+        navigate('/login');
+        return;
+      }
+      
+      const wishlistActual = getWishlist();
+      const existe = wishlistActual.some(w => w.productoId === producto.id);
+      
+      if (existe) {
+        const nuevaWishlist = wishlistActual.filter(w => w.productoId !== producto.id);
+        setWishlist(nuevaWishlist);
+        setWishlistState(prev => prev.filter(id => id !== producto.id));
+        alert('Producto eliminado de favoritos');
+      } else {
+        const nuevoFavorito = {
+          id: Date.now(),
+          productoId: producto.id,
+          usuario: currentUser,
+          fecha: new Date().toLocaleString()
+        };
+        setWishlist([nuevoFavorito, ...wishlistActual]);
+        setWishlistState(prev => [...prev, producto.id]);
+        alert('Producto agregado a favoritos');
+      }
+    };
+
+    const cargarReseñas = (productoId) => {
+    const todasReseñas = getResenas();
+    setReseñas(todasReseñas.filter(r => r.productoId === productoId));
       };
-      setWishlist([nuevoFavorito, ...wishlistActual]);
-      setWishlistState(prev => [...prev, producto.id]);
-      alert('Producto agregado a favoritos');
-    }
-  };
+
+    const agregarReseña = (productoId, calificacion, comentario) => {
+      if (!isAuthenticated) {
+        alert('Inicia sesión para calificar');
+        return;
+        }
+    
+    const nuevaReseña = {
+      id: Date.now(),
+      productoId,
+      usuario: currentUser,
+      calificacion,
+      comentario,
+      fecha: new Date().toLocaleString()
+    };
+    
+    const reseñasActuales = getResenas();
+      setResenas([nuevaReseña, ...reseñasActuales]);
+      cargarReseñas(productoId);
+      alert('Gracias por tu calificación');
+    };
 
 
 
