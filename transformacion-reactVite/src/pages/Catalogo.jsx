@@ -9,6 +9,9 @@ import Footer from '../components/Layout/Footer';
 import { getProductos, getCarritoLanding, setCarritoLanding } from '../lib/storage';
 
 const Catalogo = () => {
+  const { isAuthenticated, currentUser } = useAuth();
+  const [wishlist, setWishlistState] = useState([]);
+
   const [productos, setProductos] = useState([]);
   const [filtros, setFiltros] = useState({ categoria: '', color: '', talla: '' });
 
