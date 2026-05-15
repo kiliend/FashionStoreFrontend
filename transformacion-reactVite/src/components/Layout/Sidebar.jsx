@@ -13,6 +13,13 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
     { id: 'productos', label: 'Productos', icon: '👗', visible: isAdmin || isVendedor || isAlmacenero },
     { id: 'stock', label: 'Gestión de Stock', icon: '📦', visible: isAdmin || isAlmacenero },
     { id: 'ventas', label: 'Ventas', icon: '🛍️', visible: isAdmin || isVendedor },
+
+    // NUEVOS ITEMS
+    { id: 'cupones', label: 'Cupones', icon: '🏷️', visible: isSuperAdmin || isAdmin },
+    { id: 'blog', label: 'Blog', icon: '📝', visible: isSuperAdmin || isAdmin },
+    { id: 'faq', label: 'FAQ', icon: '❓', visible: isSuperAdmin || isAdmin },
+    { id: 'newsletter', label: 'Newsletter', icon: '📧', visible: isSuperAdmin || isAdmin },
+
     { id: 'usuarios', label: 'Usuarios', icon: '👤', visible: isSuperAdmin || isAdmin },
     { id: 'proveedores', label: 'Proveedores', icon: '🚚', visible: isAdmin || isAlmacenero },
     { id: 'ordenesCompra', label: 'Órdenes de Compra', icon: '📋', visible: isAdmin || isAlmacenero },
