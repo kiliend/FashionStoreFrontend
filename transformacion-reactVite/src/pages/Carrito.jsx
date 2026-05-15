@@ -111,6 +111,41 @@ const Carrito = () => {
   };
 
   const { subtotal, igv, total } = calcularTotales();
+  
+  // Agregar función para aplicar cupón:
+  const aplicarCupon = () => {
+    const cupones = getCupones();
+    const cupon = cupones.find(c => c.codigo === codigoCupon.toUpperCase() && !c.usado);
+    
+    if (!cupon) {
+      alert('Cupón inválido o ya usado');
+      return;
+    }
+    
+    if (new Date(cupon.validoHasta) < new Date()) {
+      alert('Cupón vencido');
+      return;
+    }
+    
+    if (subtotal < cupon.minCompra) {
+      alert(`Mínimo de compra S/ ${cupon.minCompra}`);
+      return;
+    }
+    
+    let descuentoAplicado = 0;
+    if (cupon.tipo === 'porcentaje') {
+      descuentoAplicado = (subtotal * cupon.descuento) / 100;
+    } else {
+      descuentoAplicado = cupon.descuento;
+    }
+    
+    setCuponAplicado(cupon);
+    setDescuento(descuentoAplicado);
+    alert(`Cupón ${cupon.codigo} aplicado! Descuento: S/ ${descuentoAplicado.toFixed(2)}`);
+  };
+
+
+
 
   return (
     <div className="min-h-screen">
