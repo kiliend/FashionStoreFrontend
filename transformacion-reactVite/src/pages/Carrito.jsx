@@ -13,6 +13,7 @@ const Carrito = () => {
   const [cuponAplicado, setCuponAplicado] = useState(null);
   const [descuento, setDescuento] = useState(0);
 
+
   const { isAuthenticated, currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -42,9 +43,11 @@ const Carrito = () => {
   const calcularTotales = () => {
     const subtotal = carrito.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
     const igv = subtotal * 0.18;
-    const total = subtotal + igv;
-    return { subtotal, igv, total };
+    const totalConDescuento = subtotal - descuento;
+    const total = totalConDescuento + igv;
+    return { subtotal, igv, total, descuento };
   };
+
 
   const finalizarCompra = () => {
     if (carrito.length === 0) {
