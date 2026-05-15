@@ -251,3 +251,8 @@ export const setCupones = (data) => setStorage(STORAGE_KEYS_EXTRA.CUPONES, data)
 // Wishlist
 export const getWishlist = () => getStorage(STORAGE_KEYS_EXTRA.WISHLIST, []);
 export const setWishlist = (data) => setStorage(STORAGE_KEYS_EXTRA.WISHLIST, data);
+
+
+// Chat mensajes
+export const getChatMensajes = () => getStorage(STORAGE_KEYS_EXTRA.CHAT_MENSAJES, []);
+export const setChatMensajes = (data) => setStorage(STORAGE_KEYS_EXTRA.CHAT_MENSAJES, data);
