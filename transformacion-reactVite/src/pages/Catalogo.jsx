@@ -80,6 +80,37 @@ const Catalogo = () => {
     alert('Producto agregado al carrito');
   };
 
+  // Agregar función para wishlist:
+  const toggleWishlist = (producto) => {
+    if (!isAuthenticated) {
+      alert('Inicia sesión para agregar a favoritos');
+      navigate('/login');
+      return;
+    }
+    
+    const wishlistActual = getWishlist();
+    const existe = wishlistActual.some(w => w.productoId === producto.id);
+    
+    if (existe) {
+      const nuevaWishlist = wishlistActual.filter(w => w.productoId !== producto.id);
+      setWishlist(nuevaWishlist);
+      setWishlistState(prev => prev.filter(id => id !== producto.id));
+      alert('Producto eliminado de favoritos');
+    } else {
+      const nuevoFavorito = {
+        id: Date.now(),
+        productoId: producto.id,
+        usuario: currentUser,
+        fecha: new Date().toLocaleString()
+      };
+      setWishlist([nuevoFavorito, ...wishlistActual]);
+      setWishlistState(prev => [...prev, producto.id]);
+      alert('Producto agregado a favoritos');
+    }
+  };
+
+
+
   const coloresUnicos = [...new Set(getProductos().filter(p => p.estado === 'activo').map(p => p.color))];
   const tallasUnicas = [...new Set(getProductos().filter(p => p.estado === 'activo').map(p => p.talla))];
 
