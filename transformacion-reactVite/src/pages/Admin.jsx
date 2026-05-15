@@ -15,7 +15,11 @@ import Logs from '../components/Admin/Logs';
 import Respaldos from '../components/Admin/Respaldos';
 import Reportes from '../components/Admin/Reportes';
 
-
+// NUEVOS IMPORTS
+import Cupones from '../components/Admin/Cupones';
+import Blog from '../components/Admin/Blog';
+import Faq from '../components/Admin/Faq';
+import Newsletter from '../components/Admin/Newsletter';
 
 const Admin = () => {
   const { currentUser, currentUserData, logout, currentRole } = useAuth();
