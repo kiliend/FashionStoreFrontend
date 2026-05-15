@@ -229,3 +229,17 @@ export const initializeData = () => {
     addLog("Sistema inicializado", "system", "Se creó la base de datos inicial");
   }
 };
+
+
+
+// Nuevas claves de almacenamiento
+const STORAGE_KEYS_EXTRA = {
+  CUPONES: 'cupones',
+  WISHLIST: 'wishlist',
+  RESENAS: 'resenas',
+  CHAT_MENSAJES: 'chatMensajes',
+  SUSCRIPCIONES: 'suscripciones',
+  NOTIFICACIONES_USUARIO: 'notificacionesUsuario'
+};
+
+
