@@ -9,6 +9,12 @@ import Contacto from './pages/Contacto';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 
+// NUEVAS IMPORTACIONES
+import Wishlist from './pages/Wishlist';
+import Blog from './pages/Blog';
+import Faq from './pages/Faq';
+import Perfil from './pages/Perfil';
+
 function App() {
   const { isAuthenticated, currentRole } = useAuth();
 
@@ -23,6 +29,13 @@ function App() {
       <Route path="/carrito" element={<Carrito />} />
       <Route path="/contacto" element={<Contacto />} />
       <Route path="/login" element={<Login />} />
+
+      {/* NUEVAS RUTAS */}
+      <Route path="/wishlist" element={<Wishlist />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/faq" element={<Faq />} />
+      <Route path="/perfil" element={<Perfil />} />
+
       <Route 
         path="/admin" 
         element={
