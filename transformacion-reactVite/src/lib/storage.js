@@ -243,3 +243,8 @@ const STORAGE_KEYS_EXTRA = {
 };
 
 
+
+// Cupones
+export const getCupones = () => getStorage(STORAGE_KEYS_EXTRA.CUPONES, []);
+export const setCupones = (data) => setStorage(STORAGE_KEYS_EXTRA.CUPONES, data);
+
