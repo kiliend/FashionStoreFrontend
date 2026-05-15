@@ -15,6 +15,8 @@ import Logs from '../components/Admin/Logs';
 import Respaldos from '../components/Admin/Respaldos';
 import Reportes from '../components/Admin/Reportes';
 
+
+
 const Admin = () => {
   const { currentUser, currentUserData, logout, currentRole } = useAuth();
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -26,6 +28,13 @@ const Admin = () => {
       case 'productos': return <Productos />;
       case 'stock': return <Stock />;
       case 'ventas': return <Ventas />;
+
+      // NUEVOS CASES
+      case 'cupones': return <Cupones />;
+      case 'blog': return <Blog />;
+      case 'faq': return <Faq />;
+      case 'newsletter': return <Newsletter />;
+
       case 'usuarios': return <Usuarios />;
       case 'proveedores': return <Proveedores />;
       case 'ordenesCompra': return <OrdenesCompra />;
