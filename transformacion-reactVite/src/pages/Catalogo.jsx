@@ -155,6 +155,13 @@ const Catalogo = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {productos.map((producto) => (
             <div key={producto.id} className="bg-white rounded-2xl overflow-hidden shadow-soft border border-[#f1d7e1]">
+              <button 
+                onClick={() => toggleWishlist(producto)}
+                className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:scale-110 transition"
+              >
+                {wishlist.includes(producto.id) ? '❤️' : '🤍'}
+              </button>
+
               <img src={producto.imagen} alt={producto.nombre} className="w-full h-64 object-cover" />
               <div className="p-5">
                 <span className="inline-block bg-[#ffe1ec] text-[#b83267] text-xs font-bold px-3 py-1 rounded-full mb-3">
