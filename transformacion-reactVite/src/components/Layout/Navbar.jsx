@@ -34,6 +34,11 @@ const Navbar = () => {
         <Link to="/catalogo" className="font-semibold hover:text-[#d9467a] transition">Catálogo</Link>
         <Link to="/carrito" className="font-semibold hover:text-[#d9467a] transition">Carrito</Link>
         <Link to="/contacto" className="font-semibold hover:text-[#d9467a] transition">Contacto</Link>
+
+        {/* NUEVOS ENLACES */}
+        <Link to="/wishlist" className="font-semibold hover:text-[#d9467a] transition">❤️ Favoritos</Link>
+        <Link to="/blog" className="font-semibold hover:text-[#d9467a] transition">📝 Blog</Link>
+        <Link to="/faq" className="font-semibold hover:text-[#d9467a] transition">❓ FAQ</Link>
         
         {isAuthenticated && currentRole === 'cliente' && (
           <button onClick={handleLogout} className="bg-white text-[#b83267] border border-[#f1d7e1] font-bold py-2 px-4 rounded-xl transition-all hover:bg-[#fff0f5]">
