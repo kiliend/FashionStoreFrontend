@@ -275,4 +275,21 @@ export const initializeExtraData = () => {
       { id: 2, codigo: "DESCUENTO20", descuento: 20, tipo: "porcentaje", validoHasta: "2026-12-31", usado: false, minCompra: 100 },
       { id: 3, codigo: "ENVIOGRATIS", descuento: 15, tipo: "fijo", validoHasta: "2026-12-31", usado: false, minCompra: 80 }
     ]);
-  }}
+  }
+
+
+   // Blog posts de ejemplo
+  if (getBlogPosts().length === 0) {
+    setBlogPosts([
+      { id: 1, titulo: "Tendencias de Moda 2026", resumen: "Descubre las tendencias que dominarán este año", contenido: "...", fecha: "2026-01-15", autor: "Admin", imagen: "https://images.unsplash.com/photo-1445205170230-053b83016050", categoria: "Tendencias" },
+      { id: 2, titulo: "Cómo combinar colores", resumen: "Guía para crear outfits perfectos", contenido: "...", fecha: "2026-01-20", autor: "Admin", imagen: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d", categoria: "Consejos" },
+      { id: 3, titulo: "Cuidado de prendas", resumen: "Tips para mantener tu ropa como nueva", contenido: "...", fecha: "2026-01-25", autor: "Admin", imagen: "https://images.unsplash.com/photo-1483985988355-763728e1935b", categoria: "Cuidado" }
+    ]);
+  }
+};
+
+// Blog
+const STORAGE_KEYS_BLOG = {
+  BLOG_POSTS: 'blogPosts',
+  FAQ: 'faq'
+};
