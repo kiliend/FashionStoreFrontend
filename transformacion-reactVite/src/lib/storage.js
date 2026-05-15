@@ -265,3 +265,14 @@ export const setSuscripciones = (data) => setStorage(STORAGE_KEYS_EXTRA.SUSCRIPC
 // Notificaciones usuario
 export const getNotificacionesUsuario = () => getStorage(STORAGE_KEYS_EXTRA.NOTIFICACIONES_USUARIO, []);
 export const setNotificacionesUsuario = (data) => setStorage(STORAGE_KEYS_EXTRA.NOTIFICACIONES_USUARIO, data);
+
+// Inicializar datos adicionales
+export const initializeExtraData = () => {
+// Cupones de ejemplo
+  if (getCupones().length === 0) {
+    setCupones([
+      { id: 1, codigo: "BIENVENIDA10", descuento: 10, tipo: "porcentaje", validoHasta: "2026-12-31", usado: false, minCompra: 50 },
+      { id: 2, codigo: "DESCUENTO20", descuento: 20, tipo: "porcentaje", validoHasta: "2026-12-31", usado: false, minCompra: 100 },
+      { id: 3, codigo: "ENVIOGRATIS", descuento: 15, tipo: "fijo", validoHasta: "2026-12-31", usado: false, minCompra: 80 }
+    ]);
+  }}
