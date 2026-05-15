@@ -1,119 +1,136 @@
-// src/components/Admin/Newsletter.jsx
+// src/pages/Wishlist.jsx
 import React, { useState, useEffect } from 'react';
-import { getSuscripciones, setSuscripciones, addLog } from '../../lib/storage';
-import { useAuth } from '../../contexts/AuthContext';
+import { Link } from 'react-router-dom';
+import Navbar from '../components/Layout/Navbar';
+import Footer from '../components/Layout/Footer';
+import { getWishlist, setWishlist, getProductos, addLog } from '../lib/storage';
+import { useAuth } from '../contexts/AuthContext';
 
-const Newsletter = () => {
-  const [suscripciones, setSuscripcionesState] = useState([]);
-  const [email, setEmail] = useState('');
-  const { currentUser } = useAuth();
+const Wishlist = () => {
+  const [wishlist, setWishlistState] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const { isAuthenticated, currentUser } = useAuth();
 
   useEffect(() => {
-    cargarSuscripciones();
+    cargarWishlist();
   }, []);
 
-  const cargarSuscripciones = () => {
-    setSuscripcionesState(getSuscripciones());
+  const cargarWishlist = () => {
+    const wishlistData = getWishlist();
+    const productosData = getProductos();
+    setProductos(productosData);
+    
+    // Obtener detalles completos de productos en wishlist
+    const wishlistConDetalles = wishlistData.map(item => {
+      const producto = productosData.find(p => p.id === item.productoId);
+      return { ...item, producto };
+    }).filter(item => item.producto);
+    
+    setWishlistState(wishlistConDetalles);
   };
 
-  const agregarSuscripcion = () => {
-    if (!email) {
-      alert('Ingrese un email');
-      return;
-    }
-    
-    if (suscripciones.find(s => s.email === email)) {
-      alert('Este email ya está suscrito');
-      return;
-    }
-    
-    const nuevaSuscripcion = {
-      id: Date.now(),
-      email,
-      fecha: new Date().toLocaleString(),
-      activo: true
-    };
-    
-    const nuevasSuscripciones = [nuevaSuscripcion, ...suscripciones];
-    setSuscripciones(nuevasSuscripciones);
-    addLog(`Nuevo suscriptor`, currentUser, `Email: ${email}`);
-    setEmail('');
-    alert('Suscriptor agregado correctamente');
-    cargarSuscripciones();
+  const eliminarDeWishlist = (productoId) => {
+    const wishlistActual = getWishlist();
+    const nuevaWishlist = wishlistActual.filter(item => item.productoId !== productoId);
+    setWishlist(nuevaWishlist);
+    addLog(`Producto eliminado de wishlist`, currentUser || 'cliente', `Producto ID: ${productoId}`);
+    cargarWishlist();
   };
 
-  const eliminarSuscripcion = (id) => {
-    if (confirm('¿Eliminar este suscriptor?')) {
-      const nuevasSuscripciones = suscripciones.filter(s => s.id !== id);
-      setSuscripciones(nuevasSuscripciones);
-      addLog(`Suscriptor eliminado`, currentUser, `ID: ${id}`);
-      cargarSuscripciones();
+  const agregarAlCarrito = (producto) => {
+    const carrito = JSON.parse(localStorage.getItem('carritoLanding')) || [];
+    const existente = carrito.find(item => item.id === producto.id);
+    
+    if (existente) {
+      existente.cantidad += 1;
+    } else {
+      carrito.push({
+        id: producto.id,
+        nombre: producto.nombre,
+        color: producto.color,
+        talla: producto.talla,
+        precio: producto.precio,
+        cantidad: 1,
+        imagen: producto.imagen
+      });
     }
+    
+    localStorage.setItem('carritoLanding', JSON.stringify(carrito));
+    alert('Producto agregado al carrito');
+    eliminarDeWishlist(producto.id);
   };
 
-  const enviarNewsletter = () => {
-    if (suscripciones.length === 0) {
-      alert('No hay suscriptores para enviar');
-      return;
-    }
-    
-    const asunto = prompt('Asunto del newsletter:');
-    if (!asunto) return;
-    
-    const mensaje = prompt('Mensaje del newsletter:');
-    if (!mensaje) return;
-    
-    alert(`Newsletter enviado a ${suscripciones.length} suscriptores`);
-    addLog(`Newsletter enviado`, currentUser, `Asunto: ${asunto}, Suscriptores: ${suscripciones.length}`);
-  };
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="py-20 px-[8%] text-center">
+          <h2 className="text-3xl font-bold mb-4">Lista de Deseos</h2>
+          <p className="text-[#7a5d68] mb-4">Inicia sesión para ver tus productos favoritos</p>
+          <Link to="/login" className="btn-primary inline-block">
+            Iniciar Sesión
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Suscriptores Newsletter</h2>
-        <button onClick={enviarNewsletter} className="btn-primary">
-          📧 Enviar Newsletter
-        </button>
-      </div>
+    <div className="min-h-screen">
+      <Navbar />
       
-      <div className="card">
-        <h3 className="text-xl font-bold mb-4">Agregar Nuevo Suscriptor</h3>
-        <div className="flex gap-3">
-          <input
-            type="email"
-            placeholder="correo@ejemplo.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input-field flex-1"
-          />
-          <button onClick={agregarSuscripcion} className="btn-primary">
-            Suscribir
-          </button>
+      <section className="py-10 px-[8%]">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">Mi Lista de Deseos</h2>
+          <p className="text-[#7a5d68]">Productos que te gustaron</p>
         </div>
-      </div>
-      
-      <div className="card">
-        <h3 className="text-xl font-bold mb-4">Lista de Suscriptores ({suscripciones.length})</h3>
-        <div className="space-y-2 max-h-96 overflow-y-auto">
-          {suscripciones.length === 0 ? (
-            <p className="text-[#7a5d68] text-center py-8">No hay suscriptores</p>
-          ) : (
-            suscripciones.map(suscripcion => (
-              <div key={suscripcion.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
-                <div>
-                  <p className="font-semibold">{suscripcion.email}</p>
-                  <p className="text-xs text-[#7a5d68]">Suscrito: {suscripcion.fecha}</p>
+        
+        {wishlist.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-[#7a5d68] mb-4">No tienes productos en tu lista de deseos</p>
+            <Link to="/catalogo" className="btn-primary inline-block">
+              Explorar Catálogo
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {wishlist.map((item) => (
+              <div key={item.id} className="card">
+                <img 
+                  src={item.producto?.imagen} 
+                  alt={item.producto?.nombre} 
+                  className="w-full h-64 object-cover rounded-xl mb-4"
+                />
+                <h3 className="font-bold text-lg">{item.producto?.nombre}</h3>
+                <p className="text-sm text-[#7a5d68]">Categoría: {item.producto?.categoria}</p>
+                <p className="text-xl font-bold text-[#b83267] my-2">
+                  S/ {item.producto?.precio?.toFixed(2)}
+                </p>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => agregarAlCarrito(item.producto)}
+                    className="btn-primary flex-1 text-sm"
+                    disabled={item.producto?.stock <= 0}
+                  >
+                    {item.producto?.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
+                  </button>
+                  <button 
+                    onClick={() => eliminarDeWishlist(item.productoId)}
+                    className="btn-danger text-sm px-4"
+                  >
+                    ❌
+                  </button>
                 </div>
-                <button onClick={() => eliminarSuscripcion(suscripcion.id)} className="btn-danger text-sm">
-                  Eliminar
-                </button>
               </div>
-            ))
-          )}
-        </div>
-      </div>
+            ))}
+          </div>
+        )}
+      </section>
+      
+      <Footer />
     </div>
   );
 };
 
-export default Newsletter;
+export default Wishlist;
