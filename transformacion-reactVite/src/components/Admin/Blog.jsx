@@ -1,4 +1,3 @@
-javascript
 // src/components/Admin/Blog.jsx
 import React, { useState, useEffect } from 'react';
 import { getBlogPosts, setBlogPosts, addLog } from '../../lib/storage';
