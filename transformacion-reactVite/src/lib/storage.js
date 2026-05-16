@@ -229,3 +229,79 @@ export const initializeData = () => {
     addLog("Sistema inicializado", "system", "Se creó la base de datos inicial");
   }
 };
+
+// Nuevas claves de almacenamiento
+const STORAGE_KEYS_EXTRA = {
+  CUPONES: 'cupones',
+  WISHLIST: 'wishlist',
+  RESENAS: 'resenas',
+  CHAT_MENSAJES: 'chatMensajes',
+  SUSCRIPCIONES: 'suscripciones',
+  NOTIFICACIONES_USUARIO: 'notificacionesUsuario'
+};
+
+// Cupones
+export const getCupones = () => getStorage(STORAGE_KEYS_EXTRA.CUPONES, []);
+export const setCupones = (data) => setStorage(STORAGE_KEYS_EXTRA.CUPONES, data);
+
+// Wishlist
+export const getWishlist = () => getStorage(STORAGE_KEYS_EXTRA.WISHLIST, []);
+export const setWishlist = (data) => setStorage(STORAGE_KEYS_EXTRA.WISHLIST, data);
+
+// Reseñas
+export const getResenas = () => getStorage(STORAGE_KEYS_EXTRA.RESENAS, []);
+export const setResenas = (data) => setStorage(STORAGE_KEYS_EXTRA.RESENAS, data);
+
+// Chat mensajes
+export const getChatMensajes = () => getStorage(STORAGE_KEYS_EXTRA.CHAT_MENSAJES, []);
+export const setChatMensajes = (data) => setStorage(STORAGE_KEYS_EXTRA.CHAT_MENSAJES, data);
+
+// Suscripciones
+export const getSuscripciones = () => getStorage(STORAGE_KEYS_EXTRA.SUSCRIPCIONES, []);
+export const setSuscripciones = (data) => setStorage(STORAGE_KEYS_EXTRA.SUSCRIPCIONES, data);
+
+// Notificaciones usuario
+export const getNotificacionesUsuario = () => getStorage(STORAGE_KEYS_EXTRA.NOTIFICACIONES_USUARIO, []);
+export const setNotificacionesUsuario = (data) => setStorage(STORAGE_KEYS_EXTRA.NOTIFICACIONES_USUARIO, data);
+
+// Blog
+const STORAGE_KEYS_BLOG = {
+  BLOG_POSTS: 'blogPosts',
+  FAQ: 'faq'
+};
+
+export const getBlogPosts = () => getStorage(STORAGE_KEYS_BLOG.BLOG_POSTS, []);
+export const setBlogPosts = (data) => setStorage(STORAGE_KEYS_BLOG.BLOG_POSTS, data);
+
+export const getFaq = () => getStorage(STORAGE_KEYS_BLOG.FAQ, []);
+export const setFaq = (data) => setStorage(STORAGE_KEYS_BLOG.FAQ, data);
+
+// Inicializar datos adicionales
+export const initializeExtraData = () => {
+  // Cupones de ejemplo
+  if (getCupones().length === 0) {
+    setCupones([
+      { id: 1, codigo: "BIENVENIDA10", descuento: 10, tipo: "porcentaje", validoHasta: "2026-12-31", usado: false, minCompra: 50 },
+      { id: 2, codigo: "DESCUENTO20", descuento: 20, tipo: "porcentaje", validoHasta: "2026-12-31", usado: false, minCompra: 100 },
+      { id: 3, codigo: "ENVIOGRATIS", descuento: 15, tipo: "fijo", validoHasta: "2026-12-31", usado: false, minCompra: 80 }
+    ]);
+  }
+  
+  // Blog posts de ejemplo
+  if (getBlogPosts().length === 0) {
+    setBlogPosts([
+      { id: 1, titulo: "Tendencias de Moda 2026", resumen: "Descubre las tendencias que dominarán este año", contenido: "...", fecha: "2026-01-15", autor: "Admin", imagen: "https://images.unsplash.com/photo-1445205170230-053b83016050", categoria: "Tendencias" },
+      { id: 2, titulo: "Cómo combinar colores", resumen: "Guía para crear outfits perfectos", contenido: "...", fecha: "2026-01-20", autor: "Admin", imagen: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d", categoria: "Consejos" },
+      { id: 3, titulo: "Cuidado de prendas", resumen: "Tips para mantener tu ropa como nueva", contenido: "...", fecha: "2026-01-25", autor: "Admin", imagen: "https://images.unsplash.com/photo-1483985988355-763728e1935b", categoria: "Cuidado" }
+    ]);
+  }
+};
+
+// Inicializar FAQ
+if (getFaq().length === 0) {
+  setFaq([
+    { id: 1, pregunta: "¿Cómo realizo una compra?", respuesta: "Puedes navegar por el catálogo, agregar productos al carrito y finalizar la compra.", categoria: "Compras" },
+    { id: 2, pregunta: "¿Cuánto tiempo tarda el envío?", respuesta: "Los envíos demoran entre 3-5 días hábiles.", categoria: "Envíos" },
+    { id: 3, pregunta: "¿Puedo devolver un producto?", respuesta: "Sí, tienes 7 días para realizar devoluciones.", categoria: "Devoluciones" }
+  ]);
+}

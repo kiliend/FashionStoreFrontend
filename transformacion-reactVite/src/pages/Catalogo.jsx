@@ -1,4 +1,7 @@
 //src\pages\Catalogo.jsx
+import { getWishlist, setWishlist, getResenas, addLog } from '../lib/storage';
+import { useAuth } from '../contexts/AuthContext';
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Layout/Navbar';
@@ -6,12 +9,27 @@ import Footer from '../components/Layout/Footer';
 import { getProductos, getCarritoLanding, setCarritoLanding } from '../lib/storage';
 
 const Catalogo = () => {
+  const { isAuthenticated, currentUser } = useAuth();
+  const [wishlist, setWishlistState] = useState([]);
+
   const [productos, setProductos] = useState([]);
   const [filtros, setFiltros] = useState({ categoria: '', color: '', talla: '' });
 
+
+  const [reseñasModal, setReseñasModal] = useState(null);
+  const [reseñas, setReseñas] = useState([]);
   useEffect(() => {
     cargarProductos();
   }, []);
+
+    //UseEffect:
+  useEffect(() => {
+    if (isAuthenticated) {
+      const wishlistData = getWishlist();
+      setWishlistState(wishlistData.map(w => w.productoId));
+    }
+  }, [isAuthenticated]);
+
 
   const cargarProductos = () => {
     const productosData = getProductos();
@@ -65,6 +83,63 @@ const Catalogo = () => {
     alert('Producto agregado al carrito');
   };
 
+  // Agregar función para wishlist:
+    const toggleWishlist = (producto) => {
+      if (!isAuthenticated) {
+        alert('Inicia sesión para agregar a favoritos');
+        navigate('/login');
+        return;
+      }
+      
+      const wishlistActual = getWishlist();
+      const existe = wishlistActual.some(w => w.productoId === producto.id);
+      
+      if (existe) {
+        const nuevaWishlist = wishlistActual.filter(w => w.productoId !== producto.id);
+        setWishlist(nuevaWishlist);
+        setWishlistState(prev => prev.filter(id => id !== producto.id));
+        alert('Producto eliminado de favoritos');
+      } else {
+        const nuevoFavorito = {
+          id: Date.now(),
+          productoId: producto.id,
+          usuario: currentUser,
+          fecha: new Date().toLocaleString()
+        };
+        setWishlist([nuevoFavorito, ...wishlistActual]);
+        setWishlistState(prev => [...prev, producto.id]);
+        alert('Producto agregado a favoritos');
+      }
+    };
+
+    const cargarReseñas = (productoId) => {
+    const todasReseñas = getResenas();
+    setReseñas(todasReseñas.filter(r => r.productoId === productoId));
+      };
+
+    const agregarReseña = (productoId, calificacion, comentario) => {
+      if (!isAuthenticated) {
+        alert('Inicia sesión para calificar');
+        return;
+        }
+    
+    const nuevaReseña = {
+      id: Date.now(),
+      productoId,
+      usuario: currentUser,
+      calificacion,
+      comentario,
+      fecha: new Date().toLocaleString()
+    };
+    
+    const reseñasActuales = getResenas();
+      setResenas([nuevaReseña, ...reseñasActuales]);
+      cargarReseñas(productoId);
+      alert('Gracias por tu calificación');
+    };
+
+
+
   const coloresUnicos = [...new Set(getProductos().filter(p => p.estado === 'activo').map(p => p.color))];
   const tallasUnicas = [...new Set(getProductos().filter(p => p.estado === 'activo').map(p => p.talla))];
 
@@ -109,6 +184,13 @@ const Catalogo = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {productos.map((producto) => (
             <div key={producto.id} className="bg-white rounded-2xl overflow-hidden shadow-soft border border-[#f1d7e1]">
+              <button 
+                onClick={() => toggleWishlist(producto)}
+                className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:scale-110 transition"
+              >
+                {wishlist.includes(producto.id) ? '❤️' : '🤍'}
+              </button>
+
               <img src={producto.imagen} alt={producto.nombre} className="w-full h-64 object-cover" />
               <div className="p-5">
                 <span className="inline-block bg-[#ffe1ec] text-[#b83267] text-xs font-bold px-3 py-1 rounded-full mb-3">

@@ -8,6 +8,12 @@ import { getCarritoLanding, setCarritoLanding, getProductos, setProductos, getVe
 const Carrito = () => {
   const [carrito, setCarrito] = useState([]);
   const [mensaje, setMensaje] = useState('');
+
+  const [codigoCupon, setCodigoCupon] = useState('');
+  const [cuponAplicado, setCuponAplicado] = useState(null);
+  const [descuento, setDescuento] = useState(0);
+
+
   const { isAuthenticated, currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -37,9 +43,11 @@ const Carrito = () => {
   const calcularTotales = () => {
     const subtotal = carrito.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
     const igv = subtotal * 0.18;
-    const total = subtotal + igv;
-    return { subtotal, igv, total };
+    const totalConDescuento = subtotal - descuento;
+    const total = totalConDescuento + igv;
+    return { subtotal, igv, total, descuento };
   };
+
 
   const finalizarCompra = () => {
     if (carrito.length === 0) {
@@ -106,6 +114,41 @@ const Carrito = () => {
   };
 
   const { subtotal, igv, total } = calcularTotales();
+  
+  // Agregar función para aplicar cupón:
+  const aplicarCupon = () => {
+    const cupones = getCupones();
+    const cupon = cupones.find(c => c.codigo === codigoCupon.toUpperCase() && !c.usado);
+    
+    if (!cupon) {
+      alert('Cupón inválido o ya usado');
+      return;
+    }
+    
+    if (new Date(cupon.validoHasta) < new Date()) {
+      alert('Cupón vencido');
+      return;
+    }
+    
+    if (subtotal < cupon.minCompra) {
+      alert(`Mínimo de compra S/ ${cupon.minCompra}`);
+      return;
+    }
+    
+    let descuentoAplicado = 0;
+    if (cupon.tipo === 'porcentaje') {
+      descuentoAplicado = (subtotal * cupon.descuento) / 100;
+    } else {
+      descuentoAplicado = cupon.descuento;
+    }
+    
+    setCuponAplicado(cupon);
+    setDescuento(descuentoAplicado);
+    alert(`Cupón ${cupon.codigo} aplicado! Descuento: S/ ${descuentoAplicado.toFixed(2)}`);
+  };
+
+
+
 
   return (
     <div className="min-h-screen">
@@ -168,6 +211,30 @@ const Carrito = () => {
               <p className="flex justify-between">
                 IGV (18%): <strong>S/ {igv.toFixed(2)}</strong>
               </p>
+     
+              <div className="mt-4">
+                <label className="block font-semibold mb-2">¿Tienes un cupón?</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Código de cupón"
+                    value={codigoCupon}
+                    onChange={(e) => setCodigoCupon(e.target.value)}
+                    className="input-field flex-1"
+                  />
+                  <button onClick={aplicarCupon} className="btn-secondary">
+                    Aplicar
+                  </button>
+                </div>
+                {cuponAplicado && (
+                  <p className="text-green-600 text-sm mt-2">
+                    Cupón {cuponAplicado.codigo} aplicado: -S/ {descuento.toFixed(2)}
+                  </p>
+                )}
+              </div>
+
+
+
               <div className="border-t border-[#f1d7e1] pt-3 mt-3">
                 <h3 className="text-xl font-bold text-[#b83267] flex justify-between">
                   Total: <span>S/ {total.toFixed(2)}</span>
