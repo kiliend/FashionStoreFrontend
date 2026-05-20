@@ -378,6 +378,15 @@ export const setFaq = (faq) => {
     if (!localStorage.getItem('respaldos')) {
       localStorage.setItem('respaldos', JSON.stringify([]));
     }
+    // Cupones
+    if (!localStorage.getItem('cupones')) {
+      const cuponesIniciales = [
+        { id: 1, codigo: 'BIENVENIDA10', descuento: 10, tipo: 'porcentaje', validoHasta: '2025-12-31', minCompra: 50, usado: false },
+        { id: 2, codigo: 'DESCUENTO20', descuento: 20, tipo: 'porcentaje', validoHasta: '2025-12-31', minCompra: 100, usado: false }
+      ];
+      localStorage.setItem('cupones', JSON.stringify(cuponesIniciales));
+    }
+
 
 
 
