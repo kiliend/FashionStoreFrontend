@@ -413,6 +413,12 @@ export const setFaq = (faq) => {
     if (!localStorage.getItem('wishlist')) {
       localStorage.setItem('wishlist', JSON.stringify([]));
     }
+    // Reseñas de Productos
+    if (!localStorage.getItem('resenas')) {
+      localStorage.setItem('resenas', JSON.stringify([]));
+    }
+
+
 
 
 
