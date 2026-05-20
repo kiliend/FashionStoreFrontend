@@ -366,6 +366,11 @@ export const setFaq = (faq) => {
     if (!localStorage.getItem('ordenesCompra')) {
       localStorage.setItem('ordenesCompra', JSON.stringify([]));
     }
+      // Mensajes de Contacto
+    if (!localStorage.getItem('mensajesContacto')) {
+      localStorage.setItem('mensajesContacto', JSON.stringify([]));
+    }
+
 
 
 
