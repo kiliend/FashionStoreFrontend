@@ -484,6 +484,9 @@ export const setFaq = (faq) => {
   export const getFaq = () => getItem('faq');
   export const setFaq = (data) => setItem('faq', data);
 
+  // ============ NEWSLETTER ============
+  export const getSuscripciones = () => getItem('suscripciones');
+  export const setSuscripciones = (data) => setItem('suscripciones', data);
 
 
 
