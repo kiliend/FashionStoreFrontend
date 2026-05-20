@@ -395,6 +395,16 @@ export const setFaq = (faq) => {
       localStorage.setItem('blogPosts', JSON.stringify(blogInicial));
     }
 
+    // FAQ
+    if (!localStorage.getItem('faq')) {
+      const faqInicial = [
+        { id: 1, pregunta: '¿Cómo puedo hacer un pedido?', respuesta: 'Puedes navegar por el catálogo, agregar productos al carrito y finalizar la compra.', categoria: 'Compras' },
+        { id: 2, pregunta: '¿Cuánto tiempo tarda el envío?', respuesta: 'Los envíos a Lima toman 2-3 días hábiles, provincias 5-7 días.', categoria: 'Envíos' }
+      ];
+      localStorage.setItem('faq', JSON.stringify(faqInicial));
+    }
+
+
 
 
 
