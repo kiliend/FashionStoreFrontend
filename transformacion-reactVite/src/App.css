@@ -199,3 +199,10 @@
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
 }
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
