@@ -128,4 +128,78 @@ const Carrito = () => {
         }
       }
 
+      // Actualizar stock
+      const nuevosProductos = productos.map(p => {
+        const item = carrito.find(i => i.id === p.id);
+        if (item) {
+          return { ...p, stock: p.stock - item.cantidad };
+        }
+        return p;
+      });
+      
+      const { subtotal, igv, total, descuento: descAplicado } = calcularTotales();
+      
+      const nuevaVenta = {
+        id: Date.now(),
+        fecha: new Date().toLocaleString(),
+        fechaISO: new Date().toISOString(),
+        cliente: currentUser,
+        vendedor: currentUser,
+        origen: 'ecommerce',
+        items: [...carrito],
+        subtotal,
+        igv,
+        total,
+        descuento: descAplicado,
+        cuponAplicado: cuponAplicado?.codigo || null,
+        metodoPago: 'Solicitud online',
+        estado: 'pendiente'
+      };
+      
+      const ventas = getVentas();
+      const nuevasVentas = [nuevaVenta, ...ventas];
+      setVentas(nuevasVentas);
+      setProductos(nuevosProductos);
+      setCarritoLanding([]);
+      setCarrito([]);
+      
+      addLog(`Venta registrada`, currentUser, `Total: S/ ${total.toFixed(2)}`);
+      
+      setMensaje('Solicitud de compra registrada correctamente.');
+      setLoading(false);
+      
+      setTimeout(() => {
+        setMensaje('');
+        navigate('/');
+      }, 2000);
+    }, 1500);
+  };
+
+  const { subtotal, igv, total } = calcularTotales();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex justify-center items-center h-[60vh]">
+          <Spinner size="lg" />
+          <p className="ml-4 text-[#7a5d68]">Procesando tu compra...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen">
+      <Navbar />
+      
+      <section className="py-10 px-[8%]">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">Carrito de compra</h2>
+          <p className="text-[#7a5d68]">Revisa los productos seleccionados</p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6 bg-white rounded-2xl border border-[#f1d7e1] shadow-soft p-6">
+
 
