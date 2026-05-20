@@ -440,6 +440,9 @@ export const setFaq = (faq) => {
   export const getVentas = () => getItem('ventas');
   export const setVentas = (data) => setItem('ventas', data);
 
+    // ============ PROVEEDORES ============
+  export const getProveedores = () => getItem('proveedores');
+  export const setProveedores = (data) => setItem('proveedores', data);
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
