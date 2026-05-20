@@ -409,6 +409,12 @@ export const setFaq = (faq) => {
       localStorage.setItem('suscripciones', JSON.stringify([]));
     }
 
+    // Wishlist
+    if (!localStorage.getItem('wishlist')) {
+      localStorage.setItem('wishlist', JSON.stringify([]));
+    }
+
+
 
 
 
