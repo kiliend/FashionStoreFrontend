@@ -422,19 +422,7 @@ export const setFaq = (faq) => {
       localStorage.setItem('carritoLanding', JSON.stringify([]));
     }
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
+  initializeData();
 
 
 // MEJORA 14: Funciones de Newsletter
