@@ -452,6 +452,22 @@ export const setFaq = (faq) => {
   export const getMensajesContacto = () => getItem('mensajesContacto');
   export const setMensajesContacto = (data) => setItem('mensajesContacto', data);
 
+  // ============ LOGS SISTEMA ============
+  export const getLogsSistema = () => getItem('logsSistema');
+  export const setLogsSistema = (data) => setItem('logsSistema', data);
+
+  export const addLog = (accion, usuario, detalles = '') => {
+    const logs = getLogsSistema();
+    const nuevoLog = {
+      id: Date.now(),
+      accion,
+      usuario,
+      detalles,
+      fecha: new Date().toLocaleString()
+    };
+    setLogsSistema([nuevoLog, ...logs.slice(0, 199)]);
+  };
+
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
