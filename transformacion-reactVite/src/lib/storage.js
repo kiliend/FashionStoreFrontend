@@ -476,6 +476,11 @@ export const setFaq = (faq) => {
   export const getCupones = () => getItem('cupones');
   export const setCupones = (data) => setItem('cupones', data);
 
+  // ============ BLOG ============
+  export const getBlogPosts = () => getItem('blogPosts');
+  export const setBlogPosts = (data) => setItem('blogPosts', data);
+
+
 
 
 
