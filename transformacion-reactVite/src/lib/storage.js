@@ -417,6 +417,12 @@ export const setFaq = (faq) => {
     if (!localStorage.getItem('resenas')) {
       localStorage.setItem('resenas', JSON.stringify([]));
     }
+    // Carrito Landing
+    if (!localStorage.getItem('carritoLanding')) {
+      localStorage.setItem('carritoLanding', JSON.stringify([]));
+    }
+  };
+
 
 
 
