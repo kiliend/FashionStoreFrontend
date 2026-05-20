@@ -424,6 +424,10 @@ export const setFaq = (faq) => {
   };
   initializeData();
 
+    // ============ FUNCIONES GENERICAS ============
+  const getItem = (key) => JSON.parse(localStorage.getItem(key)) || [];
+  const setItem = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
