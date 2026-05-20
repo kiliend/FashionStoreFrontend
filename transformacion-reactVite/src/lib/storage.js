@@ -404,6 +404,12 @@ export const setFaq = (faq) => {
       localStorage.setItem('faq', JSON.stringify(faqInicial));
     }
 
+    // Suscripciones Newsletter
+    if (!localStorage.getItem('suscripciones')) {
+      localStorage.setItem('suscripciones', JSON.stringify([]));
+    }
+
+
 
 
 
