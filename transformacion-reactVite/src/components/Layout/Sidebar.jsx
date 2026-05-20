@@ -1,77 +1,89 @@
 // src/components/Layout/Sidebar.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Sidebar = ({ activeSection, onSectionChange }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const { isSuperAdmin, isAdmin, isVendedor, isAlmacenero } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { currentRole } = useAuth();
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', visible: true },
-    { id: 'analytics', label: 'Analytics', icon: '📈', visible: isSuperAdmin || isAdmin },
-    { id: 'productos', label: 'Productos', icon: '👗', visible: isAdmin || isVendedor || isAlmacenero },
-    { id: 'stock', label: 'Gestión de Stock', icon: '📦', visible: isAdmin || isAlmacenero },
-    { id: 'ventas', label: 'Ventas', icon: '🛍️', visible: isAdmin || isVendedor },
-
-    // NUEVOS ITEMS
-    { id: 'cupones', label: 'Cupones', icon: '🏷️', visible: isSuperAdmin || isAdmin },
-    { id: 'blog', label: 'Blog', icon: '📝', visible: isSuperAdmin || isAdmin },
-    { id: 'faq', label: 'FAQ', icon: '❓', visible: isSuperAdmin || isAdmin },
-    { id: 'newsletter', label: 'Newsletter', icon: '📧', visible: isSuperAdmin || isAdmin },
-
-    { id: 'usuarios', label: 'Usuarios', icon: '👤', visible: isSuperAdmin || isAdmin },
-    { id: 'proveedores', label: 'Proveedores', icon: '🚚', visible: isAdmin || isAlmacenero },
-    { id: 'ordenesCompra', label: 'Órdenes de Compra', icon: '📋', visible: isAdmin || isAlmacenero },
-    { id: 'mensajes', label: 'Mensajes', icon: '📩', visible: isSuperAdmin || isAdmin },
-    { id: 'logs', label: 'Logs del Sistema', icon: '📜', visible: isSuperAdmin },
-    { id: 'respaldos', label: 'Respaldos', icon: '💾', visible: isSuperAdmin },
-    { id: 'reportes', label: 'Reportes', icon: '📊', visible: isAdmin },
+    { id: 'dashboard', label: '📊 Dashboard', icon: '📊', roles: ['super_admin', 'admin', 'vendedor', 'almacenero'] },
+    { id: 'analytics', label: '📈 Analytics', icon: '📈', roles: ['super_admin', 'admin'] },
+    { id: 'productos', label: '👗 Productos', icon: '👗', roles: ['super_admin', 'admin', 'vendedor', 'almacenero'] },
+    { id: 'stock', label: '📦 Stock', icon: '📦', roles: ['super_admin', 'admin', 'almacenero'] },
+    { id: 'ventas', label: '💰 Ventas', icon: '💰', roles: ['super_admin', 'admin', 'vendedor'] },
+    { id: 'cupones', label: '🏷️ Cupones', icon: '🏷️', roles: ['super_admin', 'admin'] },
+    { id: 'blog', label: '📝 Blog', icon: '📝', roles: ['super_admin', 'admin'] },
+    { id: 'faq', label: '❓ FAQ', icon: '❓', roles: ['super_admin', 'admin'] },
+    { id: 'newsletter', label: '📧 Newsletter', icon: '📧', roles: ['super_admin', 'admin'] },
+    { id: 'usuarios', label: '👥 Usuarios', icon: '👥', roles: ['super_admin', 'admin'] },
+    { id: 'proveedores', label: '🚚 Proveedores', icon: '🚚', roles: ['super_admin', 'admin'] },
+    { id: 'ordenesCompra', label: '📋 Órdenes', icon: '📋', roles: ['super_admin', 'admin'] },
+    { id: 'mensajes', label: '💬 Mensajes', icon: '💬', roles: ['super_admin', 'admin'] },
+    { id: 'logs', label: '📜 Logs', icon: '📜', roles: ['super_admin', 'admin'] },
+    { id: 'respaldos', label: '💾 Respaldos', icon: '💾', roles: ['super_admin', 'admin'] },
+    { id: 'reportes', label: '📑 Reportes', icon: '📑', roles: ['super_admin', 'admin'] }
   ];
 
-  const visibleItems = menuItems.filter(item => item.visible);
-  
+  const filteredMenu = menuItems.filter(item => item.roles.includes(currentRole));
+
   return (
     <>
-      <button 
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-xl shadow-soft"
+      {/* Botón menú móvil */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-xl shadow-lg border border-[#f1d7e1]"
       >
-        ☰
+        {isMobileMenuOpen ? '✕' : '☰'}
       </button>
-      
-      <aside className={`fixed lg:relative z-40 w-64 bg-gradient-to-b from-[#4a1930] to-[#2e1120] text-white transition-all duration-300 min-h-screen p-6 ${isCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}`}>
-        <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/20">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-[#ff6b9a] to-[#d9467a] flex items-center justify-center font-bold text-lg">
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed lg:sticky top-0 left-0 z-40
+          w-64 lg:w-72 min-h-screen bg-white border-r border-[#f1d7e1]
+          transform transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
+        <div className="p-5 border-b border-[#f1d7e1]">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-[#d9467a] to-[#b83267] text-white flex items-center justify-center font-bold text-xl mb-3">
             FS
           </div>
-          <div>
-            <h2 className="font-bold">FashionStore</h2>
-            <p className="text-sm text-[#f5c8d7]">Sistema Integrado</p>
-          </div>
+          <h2 className="text-xl font-bold">FashionStore</h2>
+          <p className="text-xs text-[#7a5d68]">Panel de Control</p>
         </div>
-        
-        <nav className="flex flex-col gap-2">
-          {visibleItems.map((item) => (
+
+        <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-120px)]">
+          {filteredMenu.map(item => (
             <button
               key={item.id}
               onClick={() => {
                 onSectionChange(item.id);
-                setIsCollapsed(false);
+                setIsMobileMenuOpen(false);
               }}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left ${activeSection === item.id ? 'bg-white/20' : 'hover:bg-white/10'}`}
+              className={`
+                w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3
+                ${activeSection === item.id
+                  ? 'bg-gradient-to-r from-[#d9467a] to-[#b83267] text-white shadow-md'
+                  : 'hover:bg-[#ffe1ec] text-[#2d1b24]'
+                }
+              `}
             >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
+              <span className="text-lg">{item.icon}</span>
+              <span className="font-medium">{item.label}</span>
             </button>
           ))}
-          
-          <Link to="/" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all mt-4">
-            <span>🏠</span>
-            <span>Ir a la tienda</span>
-          </Link>
         </nav>
       </aside>
+
+      {/* Overlay móvil */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
     </>
   );
 };

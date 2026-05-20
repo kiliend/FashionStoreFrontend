@@ -183,3 +183,46 @@
     border-right-color: var(--border);
   }
 }
+
+/* Animaciones adicionales */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d9467a;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b83267;
+}
+
+/* Mejoras para tablas responsivas */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}

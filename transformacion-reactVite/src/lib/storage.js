@@ -327,6 +327,180 @@ export const setFaq = (faq) => {
     return false;
   }
 };
+// Sistema de almacenamiento local para FashionStore
+// ============ INICIALIZACIÓN DE DATOS ============
+  const initializeData = () => {
+    // Usuarios
+    if (!localStorage.getItem('usuarios')) {
+      const usuariosIniciales = [
+        { nombre: 'Administrador', usuario: 'admin', password: '123456', email: 'admin@fashionstore.com', telefono: '', rol: 'super_admin' },
+        { nombre: 'Vendedor Demo', usuario: 'vendedor', password: '123456', email: 'vendedor@fashionstore.com', telefono: '', rol: 'vendedor' },
+        { nombre: 'Almacenero Demo', usuario: 'almacenero', password: '123456', email: 'almacen@fashionstore.com', telefono: '', rol: 'almacenero' },
+        { nombre: 'Cliente Demo', usuario: 'cliente', password: '123456', email: 'cliente@fashionstore.com', telefono: '999888777', rol: 'cliente' }
+      ];
+      localStorage.setItem('usuarios', JSON.stringify(usuariosIniciales));
+    }
+    // Productos
+    if (!localStorage.getItem('productos')) {
+      const productosIniciales = [
+        { id: 1, nombre: 'Polo Básico Algodón', categoria: 'Ropa', color: 'Blanco', talla: 'M', precio: 49.90, stock: 25, stockMinimo: 5, proveedor: 'TextilPerú', imagen: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab', estado: 'activo' },
+        { id: 2, nombre: 'Jeans Skinny Azul', categoria: 'Ropa', color: 'Azul', talla: '32', precio: 89.90, stock: 15, stockMinimo: 5, proveedor: 'DenimCo', imagen: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246', estado: 'activo' },
+        { id: 3, nombre: 'Zapatillas Deportivas', categoria: 'Calzado', color: 'Negro', talla: '42', precio: 159.90, stock: 8, stockMinimo: 3, proveedor: 'SportGear', imagen: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff', estado: 'activo' },
+        { id: 4, nombre: 'Bolso Casual', categoria: 'Accesorio', color: 'Marrón', talla: 'Única', precio: 69.90, stock: 12, stockMinimo: 5, proveedor: 'AccesoriosPerú', imagen: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3', estado: 'activo' }
+      ];
+      localStorage.setItem('productos', JSON.stringify(productosIniciales));
+    }
+    // Ventas
+    if (!localStorage.getItem('ventas')) {
+      localStorage.setItem('ventas', JSON.stringify([]));
+    }
+  // Proveedores
+    if (!localStorage.getItem('proveedores')) {
+      const proveedoresIniciales = [
+        { id: 1, nombre: 'TextilPerú', contacto: 'Juan Pérez', telefono: '987654321', email: 'ventas@textilperu.com', direccion: 'Lima - Perú' },
+        { id: 2, nombre: 'DenimCo', contacto: 'María Gómez', telefono: '987654322', email: 'contacto@denimco.com', direccion: 'Arequipa - Perú' }
+      ];
+      localStorage.setItem('proveedores', JSON.stringify(proveedoresIniciales));
+    }
+    // Órdenes de Compra
+    if (!localStorage.getItem('ordenesCompra')) {
+      localStorage.setItem('ordenesCompra', JSON.stringify([]));
+    }
+      // Mensajes de Contacto
+    if (!localStorage.getItem('mensajesContacto')) {
+      localStorage.setItem('mensajesContacto', JSON.stringify([]));
+    }
+    // Logs del Sistema
+    if (!localStorage.getItem('logsSistema')) {
+      localStorage.setItem('logsSistema', JSON.stringify([]));
+    }
+    // Respaldos
+    if (!localStorage.getItem('respaldos')) {
+      localStorage.setItem('respaldos', JSON.stringify([]));
+    }
+    // Cupones
+    if (!localStorage.getItem('cupones')) {
+      const cuponesIniciales = [
+        { id: 1, codigo: 'BIENVENIDA10', descuento: 10, tipo: 'porcentaje', validoHasta: '2025-12-31', minCompra: 50, usado: false },
+        { id: 2, codigo: 'DESCUENTO20', descuento: 20, tipo: 'porcentaje', validoHasta: '2025-12-31', minCompra: 100, usado: false }
+      ];
+      localStorage.setItem('cupones', JSON.stringify(cuponesIniciales));
+    }
+
+    // Blog Posts
+    if (!localStorage.getItem('blogPosts')) {
+      const blogInicial = [
+        { id: 1, titulo: 'Tendencias de Moda 2026', resumen: 'Descubre las tendencias que marcarán el año', contenido: 'Contenido completo del artículo...', categoria: 'Tendencias', imagen: 'https://images.unsplash.com/photo-1445205170230-053b83016050', autor: 'Admin', fecha: '2024-01-15' }
+      ];
+      localStorage.setItem('blogPosts', JSON.stringify(blogInicial));
+    }
+
+    // FAQ
+    if (!localStorage.getItem('faq')) {
+      const faqInicial = [
+        { id: 1, pregunta: '¿Cómo puedo hacer un pedido?', respuesta: 'Puedes navegar por el catálogo, agregar productos al carrito y finalizar la compra.', categoria: 'Compras' },
+        { id: 2, pregunta: '¿Cuánto tiempo tarda el envío?', respuesta: 'Los envíos a Lima toman 2-3 días hábiles, provincias 5-7 días.', categoria: 'Envíos' }
+      ];
+      localStorage.setItem('faq', JSON.stringify(faqInicial));
+    }
+
+    // Suscripciones Newsletter
+    if (!localStorage.getItem('suscripciones')) {
+      localStorage.setItem('suscripciones', JSON.stringify([]));
+    }
+
+    // Wishlist
+    if (!localStorage.getItem('wishlist')) {
+      localStorage.setItem('wishlist', JSON.stringify([]));
+    }
+    // Reseñas de Productos
+    if (!localStorage.getItem('resenas')) {
+      localStorage.setItem('resenas', JSON.stringify([]));
+    }
+    // Carrito Landing
+    if (!localStorage.getItem('carritoLanding')) {
+      localStorage.setItem('carritoLanding', JSON.stringify([]));
+    }
+  };
+  initializeData();
+
+    // ============ FUNCIONES GENERICAS ============
+  const getItem = (key) => JSON.parse(localStorage.getItem(key)) || [];
+  const setItem = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+
+    // ============ USUARIOS ============
+  export const getUsuarios = () => getItem('usuarios');
+  export const setUsuarios = (data) => setItem('usuarios', data);
+
+  // ============ PRODUCTOS ============
+  export const getProductos = () => getItem('productos');
+  export const setProductos = (data) => setItem('productos', data);
+
+    // ============ VENTAS ============
+  export const getVentas = () => getItem('ventas');
+  export const setVentas = (data) => setItem('ventas', data);
+
+    // ============ PROVEEDORES ============
+  export const getProveedores = () => getItem('proveedores');
+  export const setProveedores = (data) => setItem('proveedores', data);
+
+  // ============ ÓRDENES DE COMPRA ============
+  export const getOrdenesCompra = () => getItem('ordenesCompra');
+  export const setOrdenesCompra = (data) => setItem('ordenesCompra', data);
+
+    // ============ MENSAJES CONTACTO ============
+  export const getMensajesContacto = () => getItem('mensajesContacto');
+  export const setMensajesContacto = (data) => setItem('mensajesContacto', data);
+
+  // ============ LOGS SISTEMA ============
+  export const getLogsSistema = () => getItem('logsSistema');
+  export const setLogsSistema = (data) => setItem('logsSistema', data);
+
+  export const addLog = (accion, usuario, detalles = '') => {
+    const logs = getLogsSistema();
+    const nuevoLog = {
+      id: Date.now(),
+      accion,
+      usuario,
+      detalles,
+      fecha: new Date().toLocaleString()
+    };
+    setLogsSistema([nuevoLog, ...logs.slice(0, 199)]);
+  };
+
+    // ============ RESPALDOS ============
+  export const getRespaldos = () => getItem('respaldos');
+  export const setRespaldos = (data) => setItem('respaldos', data);
+
+    // ============ CUPONES ============
+  export const getCupones = () => getItem('cupones');
+  export const setCupones = (data) => setItem('cupones', data);
+
+  // ============ BLOG ============
+  export const getBlogPosts = () => getItem('blogPosts');
+  export const setBlogPosts = (data) => setItem('blogPosts', data);
+
+  // ============ FAQ ============
+  export const getFaq = () => getItem('faq');
+  export const setFaq = (data) => setItem('faq', data);
+
+  // ============ NEWSLETTER ============
+  export const getSuscripciones = () => getItem('suscripciones');
+  export const setSuscripciones = (data) => setItem('suscripciones', data);
+
+  // ============ WISHLIST ============
+  export const getWishlist = () => getItem('wishlist');
+  export const setWishlist = (data) => setItem('wishlist', data);
+
+    // ============ RESEÑAS ============
+  export const getResenas = () => getItem('resenas');
+  export const setResenas = (data) => setItem('resenas', data);
+
+  // ============ CARRITO ============
+  export const getCarritoLanding = () => getItem('carritoLanding');
+  export const setCarritoLanding = (data) => setItem('carritoLanding', data);
+
+
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
