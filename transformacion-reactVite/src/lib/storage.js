@@ -428,6 +428,10 @@ export const setFaq = (faq) => {
   const getItem = (key) => JSON.parse(localStorage.getItem(key)) || [];
   const setItem = (key, data) => localStorage.setItem(key, JSON.stringify(data));
 
+    // ============ USUARIOS ============
+  export const getUsuarios = () => getItem('usuarios');
+  export const setUsuarios = (data) => setItem('usuarios', data);
+
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
