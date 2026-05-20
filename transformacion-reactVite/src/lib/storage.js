@@ -480,6 +480,10 @@ export const setFaq = (faq) => {
   export const getBlogPosts = () => getItem('blogPosts');
   export const setBlogPosts = (data) => setItem('blogPosts', data);
 
+  // ============ FAQ ============
+  export const getFaq = () => getItem('faq');
+  export const setFaq = (data) => setItem('faq', data);
+
 
 
 
