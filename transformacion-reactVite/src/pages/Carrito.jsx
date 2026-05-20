@@ -203,3 +203,51 @@ const Carrito = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6 bg-white rounded-2xl border border-[#f1d7e1] shadow-soft p-6">
 
 
+      
+          {/* Items del carrito */}
+          <div className="space-y-4">
+            {carrito.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-[#7a5d68] text-lg mb-4">No hay productos agregados al carrito.</p>
+                <button onClick={() => navigate('/catalogo')} className="btn-primary">
+                  Explorar catálogo
+                </button>
+              </div>
+            ) : (
+              carrito.map((item, idx) => (
+                <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-[#fff8fb] rounded-xl border border-[#f1d7e1]">
+                  <img src={item.imagen} alt={item.nombre} className="w-16 h-16 object-cover rounded-lg" />
+                  <div className="flex-1">
+                    <h3 className="font-bold">{item.nombre}</h3>
+                    <p className="text-sm text-[#7a5d68]">Color: {item.color} | Talla: {item.talla}</p>
+                    <p className="font-semibold">S/ {item.precio.toFixed(2)} c/u</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => actualizarCantidad(idx, item.cantidad - 1)} 
+                      className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold hover:bg-[#f5c8d7] transition"
+                    >
+                      -
+                    </button>
+                    <span className="w-12 text-center font-semibold">{item.cantidad}</span>
+                    <button 
+                      onClick={() => actualizarCantidad(idx, item.cantidad + 1)} 
+                      className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold hover:bg-[#f5c8d7] transition"
+                    >
+                      +
+                    </button>
+                    <button 
+                      onClick={() => eliminarItem(idx)} 
+                      className="bg-red-100 text-red-700 font-bold py-2 px-3 rounded-xl transition-all hover:bg-red-200 text-sm"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                  <div className="text-right min-w-[100px]">
+                    <p className="font-bold text-[#b83267]">S/ {(item.precio * item.cantidad).toFixed(2)}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
