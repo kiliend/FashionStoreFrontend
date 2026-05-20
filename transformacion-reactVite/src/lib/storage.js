@@ -448,6 +448,10 @@ export const setFaq = (faq) => {
   export const getOrdenesCompra = () => getItem('ordenesCompra');
   export const setOrdenesCompra = (data) => setItem('ordenesCompra', data);
 
+    // ============ MENSAJES CONTACTO ============
+  export const getMensajesContacto = () => getItem('mensajesContacto');
+  export const setMensajesContacto = (data) => setItem('mensajesContacto', data);
+
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
