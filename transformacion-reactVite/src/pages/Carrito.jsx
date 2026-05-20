@@ -117,4 +117,15 @@ const Carrito = () => {
     setTimeout(() => {
       const productos = getProductos();
 
+// Verificar stock
+      for (const item of carrito) {
+        const producto = productos.find(p => p.id === item.id);
+        if (!producto || producto.stock < item.cantidad) {
+          setMensaje(`Stock insuficiente para ${item.nombre}.`);
+          setLoading(false);
+          setTimeout(() => setMensaje(''), 3000);
+          return;
+        }
+      }
+
 
