@@ -362,7 +362,7 @@ export const setFaq = (faq) => {
       ];
       localStorage.setItem('proveedores', JSON.stringify(proveedoresIniciales));
     }
-  // Órdenes de Compra
+    // Órdenes de Compra
     if (!localStorage.getItem('ordenesCompra')) {
       localStorage.setItem('ordenesCompra', JSON.stringify([]));
     }
@@ -370,6 +370,11 @@ export const setFaq = (faq) => {
     if (!localStorage.getItem('mensajesContacto')) {
       localStorage.setItem('mensajesContacto', JSON.stringify([]));
     }
+    // Logs del Sistema
+    if (!localStorage.getItem('logsSistema')) {
+      localStorage.setItem('logsSistema', JSON.stringify([]));
+    }
+
 
 
 
