@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 const Wishlist = () => {
   const [wishlist, setWishlistState] = useState([]);
   const [productos, setProductos] = useState([]);
+  const [mensajeEliminacion, setMensajeEliminacion] = useState(''); // CAMBIO: Mensaje temporal
   const { isAuthenticated, currentUser } = useAuth();
 
   useEffect(() => {
@@ -20,7 +21,6 @@ const Wishlist = () => {
     const productosData = getProductos();
     setProductos(productosData);
     
-    // Obtener detalles completos de productos en wishlist
     const wishlistConDetalles = wishlistData.map(item => {
       const producto = productosData.find(p => p.id === item.productoId);
       return { ...item, producto };
@@ -29,12 +29,16 @@ const Wishlist = () => {
     setWishlistState(wishlistConDetalles);
   };
 
-  const eliminarDeWishlist = (productoId) => {
+  const eliminarDeWishlist = (productoId, nombreProducto) => {
     const wishlistActual = getWishlist();
     const nuevaWishlist = wishlistActual.filter(item => item.productoId !== productoId);
     setWishlist(nuevaWishlist);
     addLog(`Producto eliminado de wishlist`, currentUser || 'cliente', `Producto ID: ${productoId}`);
     cargarWishlist();
+    
+    // CAMBIO: Mostrar mensaje temporal al eliminar
+    setMensajeEliminacion(`"${nombreProducto}" eliminado de favoritos`);
+    setTimeout(() => setMensajeEliminacion(''), 2000);
   };
 
   const agregarAlCarrito = (producto) => {
@@ -57,7 +61,7 @@ const Wishlist = () => {
     
     localStorage.setItem('carritoLanding', JSON.stringify(carrito));
     alert('Producto agregado al carrito');
-    eliminarDeWishlist(producto.id);
+    eliminarDeWishlist(producto.id, producto.nombre);
   };
 
   if (!isAuthenticated) {
@@ -85,6 +89,13 @@ const Wishlist = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-3">Mi Lista de Deseos</h2>
           <p className="text-[#7a5d68]">Productos que te gustaron</p>
         </div>
+        
+        {/* CAMBIO: Mensaje temporal de eliminación */}
+        {mensajeEliminacion && (
+          <div className="fixed top-20 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-bounce">
+            {mensajeEliminacion}
+          </div>
+        )}
         
         {wishlist.length === 0 ? (
           <div className="text-center py-12">
@@ -116,7 +127,7 @@ const Wishlist = () => {
                     {item.producto?.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
                   </button>
                   <button 
-                    onClick={() => eliminarDeWishlist(item.productoId)}
+                    onClick={() => eliminarDeWishlist(item.productoId, item.producto?.nombre)}
                     className="btn-danger text-sm px-4"
                   >
                     ❌
