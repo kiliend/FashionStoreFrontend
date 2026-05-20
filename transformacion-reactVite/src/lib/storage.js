@@ -472,6 +472,11 @@ export const setFaq = (faq) => {
   export const getRespaldos = () => getItem('respaldos');
   export const setRespaldos = (data) => setItem('respaldos', data);
 
+    // ============ CUPONES ============
+  export const getCupones = () => getItem('cupones');
+  export const setCupones = (data) => setItem('cupones', data);
+
+
 
 
 // MEJORA 14: Funciones de Newsletter
