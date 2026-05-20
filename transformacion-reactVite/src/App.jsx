@@ -1,50 +1,50 @@
-import React, { useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
-import { initializeData } from './lib/storage';
+// src/App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './components/UI/Toast';
+
+// Layouts
+import ProtectedRoute from './components/Auth/ProtectedRoute';
+
+// Pages
 import Landing from './pages/Landing';
 import Catalogo from './pages/Catalogo';
 import Carrito from './pages/Carrito';
-import Contacto from './pages/Contacto';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
-
-// NUEVAS IMPORTACIONES
-import Wishlist from './pages/Wishlist';
 import Blog from './pages/Blog';
 import Faq from './pages/Faq';
-import Perfil from './pages/Perfil';
+import Contacto from './pages/Contacto';
+import Wishlist from './pages/Wishlist';
 
 function App() {
-  const { isAuthenticated, currentRole } = useAuth();
-
-  useEffect(() => {
-    initializeData();
-  }, []);
-
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/catalogo" element={<Catalogo />} />
-      <Route path="/carrito" element={<Carrito />} />
-      <Route path="/contacto" element={<Contacto />} />
-      <Route path="/login" element={<Login />} />
-
-      {/* NUEVAS RUTAS */}
-      <Route path="/wishlist" element={<Wishlist />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/faq" element={<Faq />} />
-      <Route path="/perfil" element={<Perfil />} />
-
-      <Route 
-        path="/admin" 
-        element={
-          isAuthenticated && (currentRole === 'admin' || currentRole === 'vendedor') 
-            ? <Admin /> 
-            : <Navigate to="/login" />
-        } 
-      />
-    </Routes>
+    <Router>
+      <AuthProvider>
+        <ToastProvider>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/catalogo" element={<Catalogo />} />
+            <Route path="/carrito" element={<Carrito />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/contacto" element={<Contacto />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route 
+              path="/admin/*" 
+              element={
+                <ProtectedRoute allowedRoles={['super_admin', 'admin', 'vendedor', 'almacenero']}>
+                  <Admin />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </ToastProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
