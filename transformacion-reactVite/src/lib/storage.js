@@ -1,307 +1,369 @@
 // src/lib/storage.js
+// MEJORA 1-15: Sistema de storage completo con validaciones
+
 const STORAGE_KEYS = {
-  USUARIOS: 'usuarios',
   PRODUCTOS: 'productos',
   VENTAS: 'ventas',
-  PROVEEDORES: 'proveedores',
-  ORDENES_COMPRA: 'ordenesCompra',
-  MENSAJES_CONTACTO: 'mensajesContacto',
+  USUARIOS: 'usuarios',
   CARRITO_LANDING: 'carritoLanding',
-  SESION_ACTIVA: 'sesionActiva',
-  USUARIO_ACTIVO: 'usuarioActivo',
-  ROL_ACTIVO: 'rolActivo',
-  LOGS_SISTEMA: 'logsSistema',
-  RESPALDOS: 'respaldos',
-  NOTIFICACIONES: 'notificaciones'
-};
-
-// Generic get/set
-export const getStorage = (key, defaultValue = []) => {
-  const data = localStorage.getItem(key);
-  return data ? JSON.parse(data) : defaultValue;
-};
-
-export const setStorage = (key, data) => {
-  localStorage.setItem(key, JSON.stringify(data));
-};
-
-// Usuarios
-export const getUsuarios = () => getStorage(STORAGE_KEYS.USUARIOS, []);
-export const setUsuarios = (data) => setStorage(STORAGE_KEYS.USUARIOS, data);
-
-// Productos
-export const getProductos = () => getStorage(STORAGE_KEYS.PRODUCTOS, []);
-export const setProductos = (data) => setStorage(STORAGE_KEYS.PRODUCTOS, data);
-
-// Ventas
-export const getVentas = () => getStorage(STORAGE_KEYS.VENTAS, []);
-export const setVentas = (data) => setStorage(STORAGE_KEYS.VENTAS, data);
-
-// Proveedores
-export const getProveedores = () => getStorage(STORAGE_KEYS.PROVEEDORES, []);
-export const setProveedores = (data) => setStorage(STORAGE_KEYS.PROVEEDORES, data);
-
-// Ordenes de Compra
-export const getOrdenesCompra = () => getStorage(STORAGE_KEYS.ORDENES_COMPRA, []);
-export const setOrdenesCompra = (data) => setStorage(STORAGE_KEYS.ORDENES_COMPRA, data);
-
-// Mensajes de Contacto
-export const getMensajesContacto = () => getStorage(STORAGE_KEYS.MENSAJES_CONTACTO, []);
-export const setMensajesContacto = (data) => setStorage(STORAGE_KEYS.MENSAJES_CONTACTO, data);
-
-// Carrito Landing (público)
-export const getCarritoLanding = () => getStorage(STORAGE_KEYS.CARRITO_LANDING, []);
-export const setCarritoLanding = (data) => setStorage(STORAGE_KEYS.CARRITO_LANDING, data);
-
-// Logs del Sistema
-export const getLogsSistema = () => getStorage(STORAGE_KEYS.LOGS_SISTEMA, []);
-export const setLogsSistema = (data) => setStorage(STORAGE_KEYS.LOGS_SISTEMA, data);
-
-export const addLog = (accion, usuario, detalles = '') => {
-  const logs = getLogsSistema();
-  const nuevoLog = {
-    id: Date.now(),
-    fecha: new Date().toLocaleString(),
-    fechaISO: new Date().toISOString(),
-    accion,
-    usuario,
-    detalles
-  };
-  logs.unshift(nuevoLog);
-  setLogsSistema(logs);
-};
-
-// Respaldos
-export const getRespaldos = () => getStorage(STORAGE_KEYS.RESPALDOS, []);
-export const setRespaldos = (data) => setStorage(STORAGE_KEYS.RESPALDOS, data);
-
-// Notificaciones
-export const getNotificaciones = () => getStorage(STORAGE_KEYS.NOTIFICACIONES, []);
-export const setNotificaciones = (data) => setStorage(STORAGE_KEYS.NOTIFICACIONES, data);
-
-export const addNotificacion = (titulo, mensaje, tipo = 'info', usuario = null) => {
-  const notificaciones = getNotificaciones();
-  const nuevaNotificacion = {
-    id: Date.now(),
-    titulo,
-    mensaje,
-    tipo, // 'success', 'error', 'warning', 'info'
-    fecha: new Date().toLocaleString(),
-    leido: false,
-    usuario: usuario || 'todos'
-  };
-  notificaciones.unshift(nuevaNotificacion);
-  setNotificaciones(notificaciones);
-};
-
-// Sesión
-export const getSesionActiva = () => localStorage.getItem(STORAGE_KEYS.SESION_ACTIVA) === 'true';
-export const setSesionActiva = (value) => localStorage.setItem(STORAGE_KEYS.SESION_ACTIVA, value);
-
-export const getUsuarioActivo = () => localStorage.getItem(STORAGE_KEYS.USUARIO_ACTIVO) || '';
-export const setUsuarioActivo = (value) => localStorage.setItem(STORAGE_KEYS.USUARIO_ACTIVO, value);
-
-export const getRolActivo = () => localStorage.getItem(STORAGE_KEYS.ROL_ACTIVO) || '';
-export const setRolActivo = (value) => localStorage.setItem(STORAGE_KEYS.ROL_ACTIVO, value);
-
-// Logout
-export const logout = () => {
-  localStorage.removeItem(STORAGE_KEYS.SESION_ACTIVA);
-  localStorage.removeItem(STORAGE_KEYS.USUARIO_ACTIVO);
-  localStorage.removeItem(STORAGE_KEYS.ROL_ACTIVO);
-};
-
-// Inicializar datos de ejemplo
-export const initializeData = () => {
-  // Usuarios iniciales con 5 roles
-  if (getUsuarios().length === 0) {
-    setUsuarios([
-      { nombre: "Super Administrador", usuario: "superadmin", password: "123456", rol: "super_admin", email: "super@fashionstore.com", telefono: "999999991" },
-      { nombre: "Administrador General", usuario: "admin", password: "123456", rol: "admin", email: "admin@fashionstore.com", telefono: "999999992" },
-      { nombre: "Vendedor Principal", usuario: "vendedor", password: "123456", rol: "vendedor", email: "vendedor@fashionstore.com", telefono: "999999993" },
-      { nombre: "Almacenero Jefe", usuario: "almacenero", password: "123456", rol: "almacenero", email: "almacen@fashionstore.com", telefono: "999999994" },
-      { nombre: "Cliente Demo", usuario: "cliente", password: "123456", rol: "cliente", email: "cliente@fashionstore.com", telefono: "999999995" }
-    ]);
-  }
-  
-  // Productos de ejemplo
-  if (getProductos().length === 0) {
-    setProductos([
-      {
-        id: 1,
-        nombre: "Polo Oversize",
-        categoria: "Ropa",
-        color: "Negro",
-        talla: "M",
-        precio: 59.90,
-        stock: 15,
-        stockMinimo: 5,
-        proveedor: "Textil Peru S.A.",
-        imagen: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=300&q=80",
-        estado: "activo"
-      },
-      {
-        id: 2,
-        nombre: "Zapatillas Urban",
-        categoria: "Calzado",
-        color: "Blanco",
-        talla: "40",
-        precio: 219.00,
-        stock: 10,
-        stockMinimo: 3,
-        proveedor: "Calzado Chic",
-        imagen: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=300&q=80",
-        estado: "activo"
-      },
-      {
-        id: 3,
-        nombre: "Bolso Casual",
-        categoria: "Accesorio",
-        color: "Marrón",
-        talla: "Única",
-        precio: 89.90,
-        stock: 8,
-        stockMinimo: 2,
-        proveedor: "Accesorios Modernos",
-        imagen: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=300&q=80",
-        estado: "activo"
-      },
-      {
-        id: 4,
-        nombre: "Casaca Denim",
-        categoria: "Ropa",
-        color: "Azul",
-        talla: "L",
-        precio: 159.90,
-        stock: 5,
-        stockMinimo: 3,
-        proveedor: "Textil Peru S.A.",
-        imagen: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=300&q=80",
-        estado: "activo"
-      },
-      {
-        id: 5,
-        nombre: "Gorra Deportiva",
-        categoria: "Accesorio",
-        color: "Rojo",
-        talla: "Única",
-        precio: 35.90,
-        stock: 20,
-        stockMinimo: 5,
-        proveedor: "Accesorios Modernos",
-        imagen: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=300&q=80",
-        estado: "activo"
-      }
-    ]);
-  }
-  
-  // Ventas de ejemplo
-  if (getVentas().length === 0) {
-    setVentas([]);
-  }
-  
-  // Proveedores de ejemplo
-  if (getProveedores().length === 0) {
-    setProveedores([
-      { id: 1, nombre: "Textil Peru S.A.", contacto: "Juan Pérez", telefono: "987654321", email: "ventas@textilperu.com", direccion: "Lima, Perú" },
-      { id: 2, nombre: "Calzado Chic", contacto: "María García", telefono: "987654322", email: "info@calzadochic.com", direccion: "Arequipa, Perú" },
-      { id: 3, nombre: "Accesorios Modernos", contacto: "Carlos López", telefono: "987654323", email: "ventas@accesoriosmodernos.com", direccion: "Cusco, Perú" }
-    ]);
-  }
-  
-  // Ordenes de compra de ejemplo
-  if (getOrdenesCompra().length === 0) {
-    setOrdenesCompra([]);
-  }
-  
-  // Mensajes de contacto de ejemplo
-  if (getMensajesContacto().length === 0) {
-    setMensajesContacto([]);
-  }
-  
-  // Carrito de ejemplo
-  if (getCarritoLanding().length === 0) {
-    setCarritoLanding([]);
-  }
-
-  // Logs de ejemplo
-  if (getLogsSistema().length === 0) {
-    addLog("Sistema inicializado", "system", "Se creó la base de datos inicial");
-  }
-};
-
-// Nuevas claves de almacenamiento
-const STORAGE_KEYS_EXTRA = {
-  CUPONES: 'cupones',
+  MENSAJES_CONTACTO: 'mensajesContacto',
   WISHLIST: 'wishlist',
   RESENAS: 'resenas',
-  CHAT_MENSAJES: 'chatMensajes',
-  SUSCRIPCIONES: 'suscripciones',
-  NOTIFICACIONES_USUARIO: 'notificacionesUsuario'
-};
-
-// Cupones
-export const getCupones = () => getStorage(STORAGE_KEYS_EXTRA.CUPONES, []);
-export const setCupones = (data) => setStorage(STORAGE_KEYS_EXTRA.CUPONES, data);
-
-// Wishlist
-export const getWishlist = () => getStorage(STORAGE_KEYS_EXTRA.WISHLIST, []);
-export const setWishlist = (data) => setStorage(STORAGE_KEYS_EXTRA.WISHLIST, data);
-
-// Reseñas
-export const getResenas = () => getStorage(STORAGE_KEYS_EXTRA.RESENAS, []);
-export const setResenas = (data) => setStorage(STORAGE_KEYS_EXTRA.RESENAS, data);
-
-// Chat mensajes
-export const getChatMensajes = () => getStorage(STORAGE_KEYS_EXTRA.CHAT_MENSAJES, []);
-export const setChatMensajes = (data) => setStorage(STORAGE_KEYS_EXTRA.CHAT_MENSAJES, data);
-
-// Suscripciones
-export const getSuscripciones = () => getStorage(STORAGE_KEYS_EXTRA.SUSCRIPCIONES, []);
-export const setSuscripciones = (data) => setStorage(STORAGE_KEYS_EXTRA.SUSCRIPCIONES, data);
-
-// Notificaciones usuario
-export const getNotificacionesUsuario = () => getStorage(STORAGE_KEYS_EXTRA.NOTIFICACIONES_USUARIO, []);
-export const setNotificacionesUsuario = (data) => setStorage(STORAGE_KEYS_EXTRA.NOTIFICACIONES_USUARIO, data);
-
-// Blog
-const STORAGE_KEYS_BLOG = {
+  LOGS: 'logs',
+  CUPONES: 'cupones',
   BLOG_POSTS: 'blogPosts',
-  FAQ: 'faq'
+  FAQ: 'faq',
+  NEWSLETTER: 'newsletter',
+  BACKUP: 'backup'
 };
 
-export const getBlogPosts = () => getStorage(STORAGE_KEYS_BLOG.BLOG_POSTS, []);
-export const setBlogPosts = (data) => setStorage(STORAGE_KEYS_BLOG.BLOG_POSTS, data);
-
-export const getFaq = () => getStorage(STORAGE_KEYS_BLOG.FAQ, []);
-export const setFaq = (data) => setStorage(STORAGE_KEYS_BLOG.FAQ, data);
-
-// Inicializar datos adicionales
-export const initializeExtraData = () => {
-  // Cupones de ejemplo
-  if (getCupones().length === 0) {
-    setCupones([
-      { id: 1, codigo: "BIENVENIDA10", descuento: 10, tipo: "porcentaje", validoHasta: "2026-12-31", usado: false, minCompra: 50 },
-      { id: 2, codigo: "DESCUENTO20", descuento: 20, tipo: "porcentaje", validoHasta: "2026-12-31", usado: false, minCompra: 100 },
-      { id: 3, codigo: "ENVIOGRATIS", descuento: 15, tipo: "fijo", validoHasta: "2026-12-31", usado: false, minCompra: 80 }
-    ]);
+// MEJORA 1: Función de inicialización con datos por defecto
+export const initializeStorage = () => {
+  if (!localStorage.getItem(STORAGE_KEYS.PRODUCTOS)) {
+    localStorage.setItem(STORAGE_KEYS.PRODUCTOS, JSON.stringify([
+      { id: 1, nombre: 'Camisa Blanca', categoria: 'Ropa', color: 'Blanco', talla: 'M', precio: 79.90, stock: 50, imagen: '/images/camisa-blanca.jpg', estado: 'activo' },
+      { id: 2, nombre: 'Jeans Azul', categoria: 'Ropa', color: 'Azul', talla: '32', precio: 129.90, stock: 30, imagen: '/images/jeans-azul.jpg', estado: 'activo' },
+      { id: 3, nombre: 'Zapatillas Running', categoria: 'Calzado', color: 'Negro', talla: '40', precio: 199.90, stock: 20, imagen: '/images/zapatillas.jpg', estado: 'activo' },
+      { id: 4, nombre: 'Bolso Casual', categoria: 'Accesorio', color: 'Marrón', talla: 'Única', precio: 89.90, stock: 15, imagen: '/images/bolso.jpg', estado: 'activo' }
+    ]));
   }
-  
-  // Blog posts de ejemplo
-  if (getBlogPosts().length === 0) {
-    setBlogPosts([
-      { id: 1, titulo: "Tendencias de Moda 2026", resumen: "Descubre las tendencias que dominarán este año", contenido: "...", fecha: "2026-01-15", autor: "Admin", imagen: "https://images.unsplash.com/photo-1445205170230-053b83016050", categoria: "Tendencias" },
-      { id: 2, titulo: "Cómo combinar colores", resumen: "Guía para crear outfits perfectos", contenido: "...", fecha: "2026-01-20", autor: "Admin", imagen: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d", categoria: "Consejos" },
-      { id: 3, titulo: "Cuidado de prendas", resumen: "Tips para mantener tu ropa como nueva", contenido: "...", fecha: "2026-01-25", autor: "Admin", imagen: "https://images.unsplash.com/photo-1483985988355-763728e1935b", categoria: "Cuidado" }
-    ]);
+
+  if (!localStorage.getItem(STORAGE_KEYS.USUARIOS)) {
+    localStorage.setItem(STORAGE_KEYS.USUARIOS, JSON.stringify([
+      { id: 1, nombre: 'Admin', username: 'admin', password: '123456', email: 'admin@fashionstore.com', rol: 'super_admin', fechaRegistro: new Date().toISOString() }
+    ]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.VENTAS)) {
+    localStorage.setItem(STORAGE_KEYS.VENTAS, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.CARRITO_LANDING)) {
+    localStorage.setItem(STORAGE_KEYS.CARRITO_LANDING, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.MENSAJES_CONTACTO)) {
+    localStorage.setItem(STORAGE_KEYS.MENSAJES_CONTACTO, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.WISHLIST)) {
+    localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.RESENAS)) {
+    localStorage.setItem(STORAGE_KEYS.RESENAS, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.LOGS)) {
+    localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.CUPONES)) {
+    localStorage.setItem(STORAGE_KEYS.CUPONES, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.BLOG_POSTS)) {
+    localStorage.setItem(STORAGE_KEYS.BLOG_POSTS, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.FAQ)) {
+    localStorage.setItem(STORAGE_KEYS.FAQ, JSON.stringify([]));
+  }
+
+  if (!localStorage.getItem(STORAGE_KEYS.NEWSLETTER)) {
+    localStorage.setItem(STORAGE_KEYS.NEWSLETTER, JSON.stringify([]));
   }
 };
 
-// Inicializar FAQ
-if (getFaq().length === 0) {
-  setFaq([
-    { id: 1, pregunta: "¿Cómo realizo una compra?", respuesta: "Puedes navegar por el catálogo, agregar productos al carrito y finalizar la compra.", categoria: "Compras" },
-    { id: 2, pregunta: "¿Cuánto tiempo tarda el envío?", respuesta: "Los envíos demoran entre 3-5 días hábiles.", categoria: "Envíos" },
-    { id: 3, pregunta: "¿Puedo devolver un producto?", respuesta: "Sí, tienes 7 días para realizar devoluciones.", categoria: "Devoluciones" }
-  ]);
-}
+// MEJORA 2: Función de backup automático
+export const createBackup = () => {
+  const backup = {};
+  Object.keys(STORAGE_KEYS).forEach(key => {
+    backup[key] = localStorage.getItem(STORAGE_KEYS[key]);
+  });
+  backup.timestamp = new Date().toISOString();
+  localStorage.setItem(STORAGE_KEYS.BACKUP, JSON.stringify(backup));
+  addLog('Backup automático creado', 'system', 'Backup completo');
+  return backup;
+};
+
+// MEJORA 3: Función para restaurar backup
+export const restoreBackup = (backupData) => {
+  if (!backupData) return false;
+  Object.keys(STORAGE_KEYS).forEach(key => {
+    if (backupData[key]) {
+      localStorage.setItem(STORAGE_KEYS[key], backupData[key]);
+    }
+  });
+  addLog('Backup restaurado', 'system', 'Recuperación de datos');
+  return true;
+};
+
+// MEJORA 4: Funciones de Productos con validación
+export const getProductos = () => {
+  try {
+    const productos = localStorage.getItem(STORAGE_KEYS.PRODUCTOS);
+    return productos ? JSON.parse(productos) : [];
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    return [];
+  }
+};
+
+export const setProductos = (productos) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.PRODUCTOS, JSON.stringify(productos));
+    createBackup();
+    return true;
+  } catch (error) {
+    console.error('Error al guardar productos:', error);
+    return false;
+  }
+};
+
+// MEJORA 5: Funciones de Ventas con validación
+export const getVentas = () => {
+  try {
+    const ventas = localStorage.getItem(STORAGE_KEYS.VENTAS);
+    return ventas ? JSON.parse(ventas) : [];
+  } catch (error) {
+    console.error('Error al obtener ventas:', error);
+    return [];
+  }
+};
+
+export const setVentas = (ventas) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.VENTAS, JSON.stringify(ventas));
+    createBackup();
+    return true;
+  } catch (error) {
+    console.error('Error al guardar ventas:', error);
+    return false;
+  }
+};
+
+// MEJORA 6: Funciones de Carrito
+export const getCarritoLanding = () => {
+  try {
+    const carrito = localStorage.getItem(STORAGE_KEYS.CARRITO_LANDING);
+    return carrito ? JSON.parse(carrito) : [];
+  } catch (error) {
+    console.error('Error al obtener carrito:', error);
+    return [];
+  }
+};
+
+export const setCarritoLanding = (carrito) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.CARRITO_LANDING, JSON.stringify(carrito));
+    return true;
+  } catch (error) {
+    console.error('Error al guardar carrito:', error);
+    return false;
+  }
+};
+
+// MEJORA 7: Funciones de Mensajes
+export const getMensajesContacto = () => {
+  try {
+    const mensajes = localStorage.getItem(STORAGE_KEYS.MENSAJES_CONTACTO);
+    return mensajes ? JSON.parse(mensajes) : [];
+  } catch (error) {
+    console.error('Error al obtener mensajes:', error);
+    return [];
+  }
+};
+
+export const setMensajesContacto = (mensajes) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.MENSAJES_CONTACTO, JSON.stringify(mensajes));
+    createBackup();
+    return true;
+  } catch (error) {
+    console.error('Error al guardar mensajes:', error);
+    return false;
+  }
+};
+
+// MEJORA 8: Funciones de Wishlist
+export const getWishlist = () => {
+  try {
+    const wishlist = localStorage.getItem(STORAGE_KEYS.WISHLIST);
+    return wishlist ? JSON.parse(wishlist) : [];
+  } catch (error) {
+    console.error('Error al obtener wishlist:', error);
+    return [];
+  }
+};
+
+export const setWishlist = (wishlist) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(wishlist));
+    return true;
+  } catch (error) {
+    console.error('Error al guardar wishlist:', error);
+    return false;
+  }
+};
+
+// MEJORA 9: Funciones de Reseñas
+export const getResenas = () => {
+  try {
+    const resenas = localStorage.getItem(STORAGE_KEYS.RESENAS);
+    return resenas ? JSON.parse(resenas) : [];
+  } catch (error) {
+    console.error('Error al obtener reseñas:', error);
+    return [];
+  }
+};
+
+export const setResenas = (resenas) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.RESENAS, JSON.stringify(resenas));
+    return true;
+  } catch (error) {
+    console.error('Error al guardar reseñas:', error);
+    return false;
+  }
+};
+
+// MEJORA 10: Función de Logs con nivel
+export const addLog = (accion, usuario, detalles = '', nivel = 'info') => {
+  try {
+    const logs = getLogs();
+    const nuevoLog = {
+      id: Date.now(),
+      fecha: new Date().toISOString(),
+      fechaLocal: new Date().toLocaleString(),
+      accion,
+      usuario,
+      detalles,
+      nivel, // 'info', 'warning', 'error'
+      ip: 'cliente'
+    };
+    logs.unshift(nuevoLog);
+    if (logs.length > 1000) logs.pop(); // Limitar logs
+    localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(logs));
+    return true;
+  } catch (error) {
+    console.error('Error al agregar log:', error);
+    return false;
+  }
+};
+
+export const getLogs = () => {
+  try {
+    const logs = localStorage.getItem(STORAGE_KEYS.LOGS);
+    return logs ? JSON.parse(logs) : [];
+  } catch (error) {
+    console.error('Error al obtener logs:', error);
+    return [];
+  }
+};
+
+// MEJORA 11: Funciones de Cupones
+export const getCupones = () => {
+  try {
+    const cupones = localStorage.getItem(STORAGE_KEYS.CUPONES);
+    return cupones ? JSON.parse(cupones) : [];
+  } catch (error) {
+    console.error('Error al obtener cupones:', error);
+    return [];
+  }
+};
+
+export const setCupones = (cupones) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.CUPONES, JSON.stringify(cupones));
+    createBackup();
+    return true;
+  } catch (error) {
+    console.error('Error al guardar cupones:', error);
+    return false;
+  }
+};
+
+// MEJORA 12: Funciones de Blog
+export const getBlogPosts = () => {
+  try {
+    const posts = localStorage.getItem(STORAGE_KEYS.BLOG_POSTS);
+    return posts ? JSON.parse(posts) : [];
+  } catch (error) {
+    console.error('Error al obtener blog posts:', error);
+    return [];
+  }
+};
+
+export const setBlogPosts = (posts) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.BLOG_POSTS, JSON.stringify(posts));
+    createBackup();
+    return true;
+  } catch (error) {
+    console.error('Error al guardar blog posts:', error);
+    return false;
+  }
+};
+
+// MEJORA 13: Funciones de FAQ
+export const getFaq = () => {
+  try {
+    const faq = localStorage.getItem(STORAGE_KEYS.FAQ);
+    return faq ? JSON.parse(faq) : [];
+  } catch (error) {
+    console.error('Error al obtener FAQ:', error);
+    return [];
+  }
+};
+
+export const setFaq = (faq) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.FAQ, JSON.stringify(faq));
+    createBackup();
+    return true;
+  } catch (error) {
+    console.error('Error al guardar FAQ:', error);
+    return false;
+  }
+};
+
+// MEJORA 14: Funciones de Newsletter
+export const getNewsletter = () => {
+  try {
+    const newsletter = localStorage.getItem(STORAGE_KEYS.NEWSLETTER);
+    return newsletter ? JSON.parse(newsletter) : [];
+  } catch (error) {
+    console.error('Error al obtener newsletter:', error);
+    return [];
+  }
+};
+
+export const setNewsletter = (suscriptores) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.NEWSLETTER, JSON.stringify(suscriptores));
+    createBackup();
+    return true;
+  } catch (error) {
+    console.error('Error al guardar newsletter:', error);
+    return false;
+  }
+};
+
+// MEJORA 15: Función de limpieza de datos
+export const clearAllData = () => {
+  try {
+    Object.keys(STORAGE_KEYS).forEach(key => {
+      localStorage.removeItem(STORAGE_KEYS[key]);
+    });
+    initializeStorage();
+    addLog('Todos los datos fueron limpiados', 'system', 'Reset completo');
+    return true;
+  } catch (error) {
+    console.error('Error al limpiar datos:', error);
+    return false;
+  }
+};
+
+// Inicializar al cargar
+initializeStorage();
