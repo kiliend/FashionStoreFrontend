@@ -8,6 +8,7 @@ const Faq = () => {
   const [faqs, setFaqs] = useState([]);
   const [categoriaActiva, setCategoriaActiva] = useState('Todas');
   const [preguntasAbiertas, setPreguntasAbiertas] = useState([]);
+  const [busqueda, setBusqueda] = useState(''); // CAMBIO: Estado para búsqueda
 
   useEffect(() => {
     const faqsData = getFaq();
@@ -22,9 +23,17 @@ const Faq = () => {
 
   const categorias = ['Todas', ...new Set(faqs.map(f => f.categoria))];
   
-  const faqsFiltrados = categoriaActiva === 'Todas' 
+  // CAMBIO: Filtrar también por búsqueda
+  let faqsFiltrados = categoriaActiva === 'Todas' 
     ? faqs 
     : faqs.filter(f => f.categoria === categoriaActiva);
+  
+  if (busqueda.trim()) {
+    faqsFiltrados = faqsFiltrados.filter(f => 
+      f.pregunta.toLowerCase().includes(busqueda.toLowerCase()) ||
+      f.respuesta.toLowerCase().includes(busqueda.toLowerCase())
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -36,7 +45,17 @@ const Faq = () => {
           <p className="text-[#7a5d68]">Encuentra respuestas a tus dudas</p>
         </div>
         
-        {/* Categorías */}
+        {/* CAMBIO: Input de búsqueda */}
+        <div className="max-w-md mx-auto mb-8">
+          <input
+            type="text"
+            placeholder="🔍 Buscar pregunta..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="input-field w-full"
+          />
+        </div>
+        
         <div className="flex flex-wrap gap-3 justify-center mb-8">
           {categorias.map(cat => (
             <button
@@ -53,7 +72,6 @@ const Faq = () => {
           ))}
         </div>
         
-        {/* FAQs */}
         <div className="max-w-3xl mx-auto space-y-4">
           {faqsFiltrados.map(faq => (
             <div key={faq.id} className="card">
@@ -76,7 +94,9 @@ const Faq = () => {
         </div>
         
         {faqsFiltrados.length === 0 && (
-          <p className="text-center text-[#7a5d68] py-8">No hay preguntas en esta categoría</p>
+          <p className="text-center text-[#7a5d68] py-8">
+            {busqueda ? 'No se encontraron preguntas con esa búsqueda.' : 'No hay preguntas en esta categoría'}
+          </p>
         )}
       </section>
       
