@@ -374,6 +374,11 @@ export const setFaq = (faq) => {
     if (!localStorage.getItem('logsSistema')) {
       localStorage.setItem('logsSistema', JSON.stringify([]));
     }
+    // Respaldos
+    if (!localStorage.getItem('respaldos')) {
+      localStorage.setItem('respaldos', JSON.stringify([]));
+    }
+
 
 
 
