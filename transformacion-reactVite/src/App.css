@@ -220,4 +220,9 @@
   background: #b83267;
 }
 
-
+/* Mejoras para tablas responsivas */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
