@@ -387,6 +387,15 @@ export const setFaq = (faq) => {
       localStorage.setItem('cupones', JSON.stringify(cuponesIniciales));
     }
 
+    // Blog Posts
+    if (!localStorage.getItem('blogPosts')) {
+      const blogInicial = [
+        { id: 1, titulo: 'Tendencias de Moda 2026', resumen: 'Descubre las tendencias que marcarán el año', contenido: 'Contenido completo del artículo...', categoria: 'Tendencias', imagen: 'https://images.unsplash.com/photo-1445205170230-053b83016050', autor: 'Admin', fecha: '2024-01-15' }
+      ];
+      localStorage.setItem('blogPosts', JSON.stringify(blogInicial));
+    }
+
+
 
 
 
