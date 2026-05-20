@@ -113,4 +113,8 @@ const Carrito = () => {
     
     setLoading(true);
     
+    // Simular proceso
+    setTimeout(() => {
+      const productos = getProductos();
+
 
