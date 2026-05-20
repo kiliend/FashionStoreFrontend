@@ -327,6 +327,19 @@ export const setFaq = (faq) => {
     return false;
   }
 };
+// Sistema de almacenamiento local para FashionStore
+// ============ INICIALIZACIÓN DE DATOS ============
+  const initializeData = () => {
+    // Usuarios
+    if (!localStorage.getItem('usuarios')) {
+      const usuariosIniciales = [
+        { nombre: 'Administrador', usuario: 'admin', password: '123456', email: 'admin@fashionstore.com', telefono: '', rol: 'super_admin' },
+        { nombre: 'Vendedor Demo', usuario: 'vendedor', password: '123456', email: 'vendedor@fashionstore.com', telefono: '', rol: 'vendedor' },
+        { nombre: 'Almacenero Demo', usuario: 'almacenero', password: '123456', email: 'almacen@fashionstore.com', telefono: '', rol: 'almacenero' },
+        { nombre: 'Cliente Demo', usuario: 'cliente', password: '123456', email: 'cliente@fashionstore.com', telefono: '999888777', rol: 'cliente' }
+      ];
+      localStorage.setItem('usuarios', JSON.stringify(usuariosIniciales));
+    }
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
