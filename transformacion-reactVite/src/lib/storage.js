@@ -341,19 +341,28 @@ export const setFaq = (faq) => {
       localStorage.setItem('usuarios', JSON.stringify(usuariosIniciales));
     }
     // Productos
-  if (!localStorage.getItem('productos')) {
-    const productosIniciales = [
-      { id: 1, nombre: 'Polo Básico Algodón', categoria: 'Ropa', color: 'Blanco', talla: 'M', precio: 49.90, stock: 25, stockMinimo: 5, proveedor: 'TextilPerú', imagen: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab', estado: 'activo' },
-      { id: 2, nombre: 'Jeans Skinny Azul', categoria: 'Ropa', color: 'Azul', talla: '32', precio: 89.90, stock: 15, stockMinimo: 5, proveedor: 'DenimCo', imagen: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246', estado: 'activo' },
-      { id: 3, nombre: 'Zapatillas Deportivas', categoria: 'Calzado', color: 'Negro', talla: '42', precio: 159.90, stock: 8, stockMinimo: 3, proveedor: 'SportGear', imagen: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff', estado: 'activo' },
-      { id: 4, nombre: 'Bolso Casual', categoria: 'Accesorio', color: 'Marrón', talla: 'Única', precio: 69.90, stock: 12, stockMinimo: 5, proveedor: 'AccesoriosPerú', imagen: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3', estado: 'activo' }
-    ];
-    localStorage.setItem('productos', JSON.stringify(productosIniciales));
-  }
+    if (!localStorage.getItem('productos')) {
+      const productosIniciales = [
+        { id: 1, nombre: 'Polo Básico Algodón', categoria: 'Ropa', color: 'Blanco', talla: 'M', precio: 49.90, stock: 25, stockMinimo: 5, proveedor: 'TextilPerú', imagen: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab', estado: 'activo' },
+        { id: 2, nombre: 'Jeans Skinny Azul', categoria: 'Ropa', color: 'Azul', talla: '32', precio: 89.90, stock: 15, stockMinimo: 5, proveedor: 'DenimCo', imagen: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246', estado: 'activo' },
+        { id: 3, nombre: 'Zapatillas Deportivas', categoria: 'Calzado', color: 'Negro', talla: '42', precio: 159.90, stock: 8, stockMinimo: 3, proveedor: 'SportGear', imagen: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff', estado: 'activo' },
+        { id: 4, nombre: 'Bolso Casual', categoria: 'Accesorio', color: 'Marrón', talla: 'Única', precio: 69.90, stock: 12, stockMinimo: 5, proveedor: 'AccesoriosPerú', imagen: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3', estado: 'activo' }
+      ];
+      localStorage.setItem('productos', JSON.stringify(productosIniciales));
+    }
     // Ventas
-  if (!localStorage.getItem('ventas')) {
-    localStorage.setItem('ventas', JSON.stringify([]));
-  }
+    if (!localStorage.getItem('ventas')) {
+      localStorage.setItem('ventas', JSON.stringify([]));
+    }
+  // Proveedores
+    if (!localStorage.getItem('proveedores')) {
+      const proveedoresIniciales = [
+        { id: 1, nombre: 'TextilPerú', contacto: 'Juan Pérez', telefono: '987654321', email: 'ventas@textilperu.com', direccion: 'Lima - Perú' },
+        { id: 2, nombre: 'DenimCo', contacto: 'María Gómez', telefono: '987654322', email: 'contacto@denimco.com', direccion: 'Arequipa - Perú' }
+      ];
+      localStorage.setItem('proveedores', JSON.stringify(proveedoresIniciales));
+    }
+
 
 
 
