@@ -496,6 +496,9 @@ export const setFaq = (faq) => {
   export const getResenas = () => getItem('resenas');
   export const setResenas = (data) => setItem('resenas', data);
 
+  // ============ CARRITO ============
+  export const getCarritoLanding = () => getItem('carritoLanding');
+  export const setCarritoLanding = (data) => setItem('carritoLanding', data);
 
 
 
