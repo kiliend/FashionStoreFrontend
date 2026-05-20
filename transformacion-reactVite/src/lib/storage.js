@@ -432,6 +432,10 @@ export const setFaq = (faq) => {
   export const getUsuarios = () => getItem('usuarios');
   export const setUsuarios = (data) => setItem('usuarios', data);
 
+  // ============ PRODUCTOS ============
+  export const getProductos = () => getItem('productos');
+  export const setProductos = (data) => setItem('productos', data);
+
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
