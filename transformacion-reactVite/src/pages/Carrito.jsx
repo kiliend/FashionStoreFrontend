@@ -250,4 +250,71 @@ const Carrito = () => {
               ))
             )}
           </div>
+          
+          {/* Resumen */}
+          <div className="lg:border-l lg:border-[#f1d7e1] lg:pl-6">
+            <div className="space-y-3">
+              <p className="flex justify-between">
+                Subtotal: <strong>S/ {subtotal.toFixed(2)}</strong>
+              </p>
+              <p className="flex justify-between">
+                IGV (18%): <strong>S/ {igv.toFixed(2)}</strong>
+              </p>
+              {descuento > 0 && (
+                <p className="flex justify-between text-green-600">
+                  Descuento: <strong>- S/ {descuento.toFixed(2)}</strong>
+                </p>
+              )}
+
+              <div className="mt-4">
+                <label className="block font-semibold mb-2">¿Tienes un cupón?</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Código de cupón"
+                    value={codigoCupon}
+                    onChange={(e) => setCodigoCupon(e.target.value)}
+                    className="input-field flex-1 uppercase"
+                  />
+                  <button onClick={aplicarCupon} className="btn-secondary">
+                    Aplicar
+                  </button>
+                </div>
+                {cuponAplicado && (
+                  <p className="text-green-600 text-sm mt-2">
+                    Cupón {cuponAplicado.codigo} aplicado: -S/ {descuento.toFixed(2)}
+                  </p>
+                )}
+              </div>
+
+              <div className="border-t border-[#f1d7e1] pt-3 mt-3">
+                <h3 className="text-xl font-bold text-[#b83267] flex justify-between">
+                  Total: <span>S/ {total.toFixed(2)}</span>
+                </h3>
+              </div>
+              
+              <button 
+                onClick={finalizarCompra} 
+                disabled={carrito.length === 0}
+                className={`w-full bg-gradient-to-r from-[#d9467a] to-[#b83267] text-white font-bold py-3 px-5 rounded-xl transition-all hover:opacity-90 mt-4 ${carrito.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                Finalizar compra
+              </button>
+              
+              {mensaje && (
+                <p className={`text-center mt-3 font-semibold ${mensaje.includes('Debe') || mensaje.includes('inválido') || mensaje.includes('insuficiente') ? 'text-red-600' : 'text-green-600'}`}>
+                  {mensaje}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <Footer />
+    </div>
+  );
+};
+
+export default Carrito;
 
