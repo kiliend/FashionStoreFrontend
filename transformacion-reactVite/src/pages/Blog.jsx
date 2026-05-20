@@ -7,11 +7,44 @@ import { getBlogPosts } from '../lib/storage';
 const Blog = () => {
   const [posts, setPosts] = useState([]);
   const [postSeleccionado, setPostSeleccionado] = useState(null);
+  const [cargando, setCargando] = useState(true); // CAMBIO: Estado de carga
 
   useEffect(() => {
-    const blogPosts = getBlogPosts();
-    setPosts(blogPosts);
+    const cargarPosts = async () => {
+      setCargando(true);
+      const blogPosts = getBlogPosts();
+      setPosts(blogPosts);
+      setCargando(false);
+    };
+    cargarPosts();
   }, []);
+
+  // CAMBIO: Skeleton loading mientras carga
+  if (cargando) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <section className="py-10 px-[8%]">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Blog de Moda</h2>
+            <p className="text-[#7a5d68]">Cargando artículos...</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1,2,3].map(i => (
+              <div key={i} className="card animate-pulse">
+                <div className="w-full h-48 bg-gray-200 rounded-xl mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-20 mb-2"></div>
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+              </div>
+            ))}
+          </div>
+        </section>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">

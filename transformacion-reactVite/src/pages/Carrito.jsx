@@ -1,18 +1,17 @@
+// src/pages/Carrito.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/Layout/Footer';
 import { useAuth } from '../contexts/AuthContext';
-import { getCarritoLanding, setCarritoLanding, getProductos, setProductos, getVentas, setVentas } from '../lib/storage';
+import { getCarritoLanding, setCarritoLanding, getProductos, setProductos, getVentas, setVentas, getCupones, setCupones } from '../lib/storage';
 
 const Carrito = () => {
   const [carrito, setCarrito] = useState([]);
   const [mensaje, setMensaje] = useState('');
-
   const [codigoCupon, setCodigoCupon] = useState('');
   const [cuponAplicado, setCuponAplicado] = useState(null);
   const [descuento, setDescuento] = useState(0);
-
 
   const { isAuthenticated, currentUser } = useAuth();
   const navigate = useNavigate();
@@ -48,6 +47,19 @@ const Carrito = () => {
     return { subtotal, igv, total, descuento };
   };
 
+  // CAMBIO: Función para limpiar carrito con confirmación
+  const limpiarCarrito = () => {
+    if (carrito.length === 0) return;
+    const confirmar = window.confirm('¿Estás seguro de que quieres vaciar todo el carrito?');
+    if (confirmar) {
+      setCarrito([]);
+      setCarritoLanding([]);
+      setCuponAplicado(null);
+      setDescuento(0);
+      setMensaje('Carrito vaciado correctamente');
+      setTimeout(() => setMensaje(''), 2000);
+    }
+  };
 
   const finalizarCompra = () => {
     if (carrito.length === 0) {
@@ -64,7 +76,6 @@ const Carrito = () => {
     
     const productos = getProductos();
     
-    // Verificar stock
     for (const item of carrito) {
       const producto = productos.find(p => p.id === item.id);
       if (!producto || producto.stock < item.cantidad) {
@@ -73,7 +84,6 @@ const Carrito = () => {
       }
     }
     
-    // Actualizar stock
     const nuevosProductos = productos.map(p => {
       const item = carrito.find(i => i.id === p.id);
       if (item) {
@@ -115,7 +125,6 @@ const Carrito = () => {
 
   const { subtotal, igv, total } = calcularTotales();
   
-  // Agregar función para aplicar cupón:
   const aplicarCupon = () => {
     const cupones = getCupones();
     const cupon = cupones.find(c => c.codigo === codigoCupon.toUpperCase() && !c.usado);
@@ -147,9 +156,6 @@ const Carrito = () => {
     alert(`Cupón ${cupon.codigo} aplicado! Descuento: S/ ${descuentoAplicado.toFixed(2)}`);
   };
 
-
-
-
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -161,48 +167,57 @@ const Carrito = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6 bg-white rounded-2xl border border-[#f1d7e1] shadow-soft p-6">
-          {/* Items del carrito */}
           <div className="space-y-4">
             {carrito.length === 0 ? (
               <p className="text-[#7a5d68] text-center py-8">No hay productos agregados al carrito.</p>
             ) : (
-              carrito.map((item, idx) => (
-                <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-[#fff8fb] rounded-xl border border-[#f1d7e1]">
-                  <div className="flex-1">
-                    <h3 className="font-bold">{item.nombre}</h3>
-                    <p className="text-sm text-[#7a5d68]">Color: {item.color} | Talla: {item.talla}</p>
-                    <p className="font-semibold">S/ {item.precio.toFixed(2)} c/u</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button 
-                      onClick={() => actualizarCantidad(idx, item.cantidad - 1)} 
-                      className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold hover:bg-[#f5c8d7] transition"
-                    >
-                      -
-                    </button>
-                    <span className="w-12 text-center font-semibold">{item.cantidad}</span>
-                    <button 
-                      onClick={() => actualizarCantidad(idx, item.cantidad + 1)} 
-                      className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold hover:bg-[#f5c8d7] transition"
-                    >
-                      +
-                    </button>
-                    <button 
-                      onClick={() => eliminarItem(idx)} 
-                      className="bg-red-100 text-red-700 font-bold py-2 px-3 rounded-xl transition-all hover:bg-red-200 text-sm"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                  <div className="text-right min-w-[100px]">
-                    <p className="font-bold text-[#b83267]">S/ {(item.precio * item.cantidad).toFixed(2)}</p>
-                  </div>
+              <>
+                {/* CAMBIO: Botón para vaciar carrito */}
+                <div className="flex justify-end">
+                  <button 
+                    onClick={limpiarCarrito}
+                    className="text-red-600 text-sm hover:underline mb-2"
+                  >
+                    🗑️ Vaciar carrito
+                  </button>
                 </div>
-              ))
+                {carrito.map((item, idx) => (
+                  <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-[#fff8fb] rounded-xl border border-[#f1d7e1]">
+                    <div className="flex-1">
+                      <h3 className="font-bold">{item.nombre}</h3>
+                      <p className="text-sm text-[#7a5d68]">Color: {item.color} | Talla: {item.talla}</p>
+                      <p className="font-semibold">S/ {item.precio.toFixed(2)} c/u</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => actualizarCantidad(idx, item.cantidad - 1)} 
+                        className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold hover:bg-[#f5c8d7] transition"
+                      >
+                        -
+                      </button>
+                      <span className="w-12 text-center font-semibold">{item.cantidad}</span>
+                      <button 
+                        onClick={() => actualizarCantidad(idx, item.cantidad + 1)} 
+                        className="w-8 h-8 rounded-full bg-[#ffe1ec] text-[#b83267] font-bold hover:bg-[#f5c8d7] transition"
+                      >
+                        +
+                      </button>
+                      <button 
+                        onClick={() => eliminarItem(idx)} 
+                        className="bg-red-100 text-red-700 font-bold py-2 px-3 rounded-xl transition-all hover:bg-red-200 text-sm"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                    <div className="text-right min-w-[100px]">
+                      <p className="font-bold text-[#b83267]">S/ {(item.precio * item.cantidad).toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+              </>
             )}
           </div>
           
-          {/* Resumen */}
           <div className="lg:border-l lg:border-[#f1d7e1] lg:pl-6">
             <div className="space-y-3">
               <p className="flex justify-between">
@@ -232,8 +247,6 @@ const Carrito = () => {
                   </p>
                 )}
               </div>
-
-
 
               <div className="border-t border-[#f1d7e1] pt-3 mt-3">
                 <h3 className="text-xl font-bold text-[#b83267] flex justify-between">

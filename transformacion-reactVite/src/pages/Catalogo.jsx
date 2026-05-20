@@ -1,35 +1,32 @@
-//src\pages\Catalogo.jsx
+// src/pages/Catalogo.jsx
 import { getWishlist, setWishlist, getResenas, addLog } from '../lib/storage';
 import { useAuth } from '../contexts/AuthContext';
-
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/Layout/Footer';
 import { getProductos, getCarritoLanding, setCarritoLanding } from '../lib/storage';
 
 const Catalogo = () => {
   const { isAuthenticated, currentUser } = useAuth();
+  const navigate = useNavigate();
   const [wishlist, setWishlistState] = useState([]);
-
   const [productos, setProductos] = useState([]);
   const [filtros, setFiltros] = useState({ categoria: '', color: '', talla: '' });
-
-
+  const [ordenPrecio, setOrdenPrecio] = useState(''); // CAMBIO: Estado para ordenamiento
   const [reseñasModal, setReseñasModal] = useState(null);
   const [reseñas, setReseñas] = useState([]);
+
   useEffect(() => {
     cargarProductos();
   }, []);
 
-    //UseEffect:
   useEffect(() => {
     if (isAuthenticated) {
       const wishlistData = getWishlist();
       setWishlistState(wishlistData.map(w => w.productoId));
     }
   }, [isAuthenticated]);
-
 
   const cargarProductos = () => {
     const productosData = getProductos();
@@ -49,6 +46,13 @@ const Catalogo = () => {
       filtrados = filtrados.filter(p => p.talla === filtros.talla);
     }
     
+    // CAMBIO: Ordenar por precio
+    if (ordenPrecio === 'asc') {
+      filtrados.sort((a, b) => a.precio - b.precio);
+    } else if (ordenPrecio === 'desc') {
+      filtrados.sort((a, b) => b.precio - a.precio);
+    }
+    
     setProductos(filtrados);
   };
 
@@ -59,7 +63,7 @@ const Catalogo = () => {
 
   useEffect(() => {
     filtrarProductos();
-  }, [filtros]);
+  }, [filtros, ordenPrecio]);
 
   const agregarAlCarrito = (producto) => {
     const carrito = getCarritoLanding();
@@ -83,45 +87,44 @@ const Catalogo = () => {
     alert('Producto agregado al carrito');
   };
 
-  // Agregar función para wishlist:
-    const toggleWishlist = (producto) => {
-      if (!isAuthenticated) {
-        alert('Inicia sesión para agregar a favoritos');
-        navigate('/login');
-        return;
-      }
-      
-      const wishlistActual = getWishlist();
-      const existe = wishlistActual.some(w => w.productoId === producto.id);
-      
-      if (existe) {
-        const nuevaWishlist = wishlistActual.filter(w => w.productoId !== producto.id);
-        setWishlist(nuevaWishlist);
-        setWishlistState(prev => prev.filter(id => id !== producto.id));
-        alert('Producto eliminado de favoritos');
-      } else {
-        const nuevoFavorito = {
-          id: Date.now(),
-          productoId: producto.id,
-          usuario: currentUser,
-          fecha: new Date().toLocaleString()
-        };
-        setWishlist([nuevoFavorito, ...wishlistActual]);
-        setWishlistState(prev => [...prev, producto.id]);
-        alert('Producto agregado a favoritos');
-      }
-    };
+  const toggleWishlist = (producto) => {
+    if (!isAuthenticated) {
+      alert('Inicia sesión para agregar a favoritos');
+      navigate('/login');
+      return;
+    }
+    
+    const wishlistActual = getWishlist();
+    const existe = wishlistActual.some(w => w.productoId === producto.id);
+    
+    if (existe) {
+      const nuevaWishlist = wishlistActual.filter(w => w.productoId !== producto.id);
+      setWishlist(nuevaWishlist);
+      setWishlistState(prev => prev.filter(id => id !== producto.id));
+      alert('Producto eliminado de favoritos');
+    } else {
+      const nuevoFavorito = {
+        id: Date.now(),
+        productoId: producto.id,
+        usuario: currentUser,
+        fecha: new Date().toLocaleString()
+      };
+      setWishlist([nuevoFavorito, ...wishlistActual]);
+      setWishlistState(prev => [...prev, producto.id]);
+      alert('Producto agregado a favoritos');
+    }
+  };
 
-    const cargarReseñas = (productoId) => {
+  const cargarReseñas = (productoId) => {
     const todasReseñas = getResenas();
     setReseñas(todasReseñas.filter(r => r.productoId === productoId));
-      };
+  };
 
-    const agregarReseña = (productoId, calificacion, comentario) => {
-      if (!isAuthenticated) {
-        alert('Inicia sesión para calificar');
-        return;
-        }
+  const agregarReseña = (productoId, calificacion, comentario) => {
+    if (!isAuthenticated) {
+      alert('Inicia sesión para calificar');
+      return;
+    }
     
     const nuevaReseña = {
       id: Date.now(),
@@ -133,12 +136,10 @@ const Catalogo = () => {
     };
     
     const reseñasActuales = getResenas();
-      setResenas([nuevaReseña, ...reseñasActuales]);
-      cargarReseñas(productoId);
-      alert('Gracias por tu calificación');
-    };
-
-
+    setResenas([nuevaReseña, ...reseñasActuales]);
+    cargarReseñas(productoId);
+    alert('Gracias por tu calificación');
+  };
 
   const coloresUnicos = [...new Set(getProductos().filter(p => p.estado === 'activo').map(p => p.color))];
   const tallasUnicas = [...new Set(getProductos().filter(p => p.estado === 'activo').map(p => p.talla))];
@@ -153,8 +154,8 @@ const Catalogo = () => {
           <p className="text-[#7a5d68]">Explora nuestros productos disponibles</p>
         </div>
         
-        {/* Filtros */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+        {/* CAMBIO: Agregar ordenamiento por precio */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
           <div className="card">
             <label className="block font-bold mb-2">Categoría</label>
             <select name="categoria" value={filtros.categoria} onChange={handleFiltroChange} className="input-field">
@@ -178,15 +179,23 @@ const Catalogo = () => {
               {tallasUnicas.map(talla => <option key={talla}>{talla}</option>)}
             </select>
           </div>
+          
+          <div className="card">
+            <label className="block font-bold mb-2">Ordenar por precio</label>
+            <select value={ordenPrecio} onChange={(e) => setOrdenPrecio(e.target.value)} className="input-field">
+              <option value="">Por defecto</option>
+              <option value="asc">Menor a mayor</option>
+              <option value="desc">Mayor a menor</option>
+            </select>
+          </div>
         </div>
         
-        {/* Productos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {productos.map((producto) => (
-            <div key={producto.id} className="bg-white rounded-2xl overflow-hidden shadow-soft border border-[#f1d7e1]">
+            <div key={producto.id} className="bg-white rounded-2xl overflow-hidden shadow-soft border border-[#f1d7e1] relative">
               <button 
                 onClick={() => toggleWishlist(producto)}
-                className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:scale-110 transition"
+                className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:scale-110 transition z-10"
               >
                 {wishlist.includes(producto.id) ? '❤️' : '🤍'}
               </button>

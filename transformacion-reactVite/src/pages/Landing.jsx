@@ -1,4 +1,4 @@
-//src\pages\Landing.jsx
+// src/pages/Landing.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Layout/Navbar';
@@ -7,17 +7,19 @@ import { getProductos } from '../lib/storage';
 
 const Landing = () => {
   const [productosDestacados, setProductosDestacados] = useState([]);
+  const [totalProductos, setTotalProductos] = useState(0); // CAMBIO: Contador de productos
 
   useEffect(() => {
     const productos = getProductos();
-    setProductosDestacados(productos.slice(0, 4));
+    const activos = productos.filter(p => p.estado === 'activo');
+    setProductosDestacados(activos.slice(0, 4));
+    setTotalProductos(activos.length); // CAMBIO: Guardar total
   }, []);
 
   return (
     <div className="min-h-screen">
       <Navbar />
       
-      {/* Hero Section */}
       <header className="min-h-screen py-8 px-[8%] bg-gradient-to-br from-[#fff0f5] to-[#ffe7ef]">
         <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-8 items-center">
           <div>
@@ -30,6 +32,10 @@ const Landing = () => {
             <p className="text-[#7a5d68] text-lg mb-6 max-w-xl">
               Descubre ropa, calzado y accesorios en una experiencia más organizada,
               visual y profesional.
+            </p>
+            {/* CAMBIO: Mostrar contador de productos */}
+            <p className="text-[#b83267] font-semibold mb-4">
+              📦 {totalProductos} productos disponibles en nuestro catálogo
             </p>
             <div className="flex gap-4 flex-wrap">
               <Link to="/catalogo" className="btn-primary">
@@ -56,7 +62,6 @@ const Landing = () => {
         </div>
       </header>
 
-      {/* Sobre Nosotros */}
       <section className="py-20 px-[8%]">
         <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">Sobre FashionStore</h2>
@@ -86,7 +91,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Categorías */}
       <section className="py-20 px-[8%] bg-[#fff1f6]">
         <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">Categorías destacadas</h2>
@@ -109,7 +113,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Productos Destacados */}
       <section className="py-20 px-[8%]">
         <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">Productos destacados</h2>

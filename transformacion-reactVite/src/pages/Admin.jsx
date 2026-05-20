@@ -14,8 +14,6 @@ import Mensajes from '../components/Admin/Mensajes';
 import Logs from '../components/Admin/Logs';
 import Respaldos from '../components/Admin/Respaldos';
 import Reportes from '../components/Admin/Reportes';
-
-// NUEVOS IMPORTS
 import Cupones from '../components/Admin/Cupones';
 import Blog from '../components/Admin/Blog';
 import Faq from '../components/Admin/Faq';
@@ -25,6 +23,13 @@ const Admin = () => {
   const { currentUser, currentUserData, logout, currentRole } = useAuth();
   const [activeSection, setActiveSection] = useState('dashboard');
 
+  // CAMBIO: Validación de permisos por rol - Si no es admin o super_admin, redirigir
+  React.useEffect(() => {
+    if (currentRole !== 'super_admin' && currentRole !== 'admin' && currentRole !== 'vendedor' && currentRole !== 'almacenero') {
+      window.location.href = '/';
+    }
+  }, [currentRole]);
+
   const renderSection = () => {
     switch(activeSection) {
       case 'dashboard': return <Dashboard />;
@@ -32,13 +37,10 @@ const Admin = () => {
       case 'productos': return <Productos />;
       case 'stock': return <Stock />;
       case 'ventas': return <Ventas />;
-
-      // NUEVOS CASES
       case 'cupones': return <Cupones />;
       case 'blog': return <Blog />;
       case 'faq': return <Faq />;
       case 'newsletter': return <Newsletter />;
-
       case 'usuarios': return <Usuarios />;
       case 'proveedores': return <Proveedores />;
       case 'ordenesCompra': return <OrdenesCompra />;
