@@ -362,6 +362,10 @@ export const setFaq = (faq) => {
       ];
       localStorage.setItem('proveedores', JSON.stringify(proveedoresIniciales));
     }
+  // Órdenes de Compra
+    if (!localStorage.getItem('ordenesCompra')) {
+      localStorage.setItem('ordenesCompra', JSON.stringify([]));
+    }
 
 
 
