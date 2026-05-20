@@ -1,4 +1,4 @@
-//src\pages\Contacto.jsx
+// src/pages/Contacto.jsx
 import React, { useState } from 'react';
 import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/Layout/Footer';
@@ -12,11 +12,23 @@ const Contacto = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // CAMBIO: Función para validar email
+  const validarEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const enviarMensaje = () => {
     const { nombre, correo, mensaje: msg } = formData;
     
     if (!nombre || !correo || !msg) {
       setMensaje({ text: 'Complete todos los campos.', type: 'error' });
+      return;
+    }
+    
+    // CAMBIO: Validar formato de email
+    if (!validarEmail(correo)) {
+      setMensaje({ text: 'Ingrese un correo electrónico válido.', type: 'error' });
       return;
     }
     
@@ -49,7 +61,6 @@ const Contacto = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Información de contacto */}
           <div className="card">
             <h3 className="text-xl font-bold mb-4">Información de contacto</h3>
             <div className="space-y-3">
@@ -60,7 +71,6 @@ const Contacto = () => {
             </div>
           </div>
           
-          {/* Formulario de contacto */}
           <div className="card">
             <h3 className="text-xl font-bold mb-4">Envíanos un mensaje</h3>
             
@@ -72,7 +82,9 @@ const Contacto = () => {
               
               <div>
                 <label className="block font-semibold mb-2">Correo</label>
-                <input type="email" name="correo" value={formData.correo} onChange={handleChange} className="input-field" placeholder="Tu correo" />
+                <input type="email" name="correo" value={formData.correo} onChange={handleChange} className="input-field" placeholder="ejemplo@correo.com" />
+                {/* CAMBIO: Indicación de formato válido */}
+                <p className="text-xs text-[#7a5d68] mt-1">Ingresa un correo válido (ejemplo@correo.com)</p>
               </div>
               
               <div>
@@ -92,7 +104,6 @@ const Contacto = () => {
         </div>
       </section>
       
-      {/* Misión, Visión, Compromiso */}
       <section className="py-16 px-[8%] bg-[#fff1f6]">
         <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">Nuestra empresa</h2>
