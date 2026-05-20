@@ -1,24 +1,33 @@
 // src/pages/Catalogo.jsx
-import { getWishlist, setWishlist, getResenas, addLog } from '../lib/storage';
-import { useAuth } from '../contexts/AuthContext';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/Layout/Footer';
-import { getProductos, getCarritoLanding, setCarritoLanding } from '../lib/storage';
+import { getProductos, getCarritoLanding, setCarritoLanding, getWishlist, setWishlist, getResenas, setResenas, addLog } from '../lib/storage';
+import { useAuth } from '../contexts/AuthContext';
+import StarRating, { RatingAverage } from '../components/UI/StarRating';
+import Modal from '../components/UI/Modal';
+import Spinner from '../components/UI/Spinner';
+import Pagination from '../components/UI/Pagination';
 
 const Catalogo = () => {
   const { isAuthenticated, currentUser } = useAuth();
   const navigate = useNavigate();
-  const [wishlist, setWishlistState] = useState([]);
+  
   const [productos, setProductos] = useState([]);
+  const [productosFiltrados, setProductosFiltrados] = useState([]);
   const [filtros, setFiltros] = useState({ categoria: '', color: '', talla: '' });
-  const [ordenPrecio, setOrdenPrecio] = useState(''); // CAMBIO: Estado para ordenamiento
+  const [wishlist, setWishlistState] = useState([]);
   const [reseñasModal, setReseñasModal] = useState(null);
-  const [reseñas, setReseñas] = useState([]);
+  const [reseñasProducto, setReseñasProducto] = useState([]);
+  const [nuevaReseña, setNuevaReseña] = useState({ calificacion: 0, comentario: '' });
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [toast, setToast] = useState(null);
+  const itemsPerPage = 8;
 
   useEffect(() => {
-    cargarProductos();
+    cargarDatos();
   }, []);
 
   useEffect(() => {
@@ -28,13 +37,22 @@ const Catalogo = () => {
     }
   }, [isAuthenticated]);
 
-  const cargarProductos = () => {
-    const productosData = getProductos();
-    setProductos(productosData.filter(p => p.estado === 'activo'));
+  useEffect(() => {
+    filtrarProductos();
+  }, [filtros, productos]);
+
+  const cargarDatos = async () => {
+    setLoading(true);
+    // Simular carga asíncrona
+    setTimeout(() => {
+      const productosData = getProductos();
+      setProductos(productosData.filter(p => p.estado === 'activo'));
+      setLoading(false);
+    }, 500);
   };
 
   const filtrarProductos = () => {
-    let filtrados = getProductos().filter(p => p.estado === 'activo');
+    let filtrados = productos.filter(p => p.estado === 'activo');
     
     if (filtros.categoria) {
       filtrados = filtrados.filter(p => p.categoria === filtros.categoria);
@@ -46,14 +64,8 @@ const Catalogo = () => {
       filtrados = filtrados.filter(p => p.talla === filtros.talla);
     }
     
-    // CAMBIO: Ordenar por precio
-    if (ordenPrecio === 'asc') {
-      filtrados.sort((a, b) => a.precio - b.precio);
-    } else if (ordenPrecio === 'desc') {
-      filtrados.sort((a, b) => b.precio - a.precio);
-    }
-    
-    setProductos(filtrados);
+    setProductosFiltrados(filtrados);
+    setCurrentPage(1);
   };
 
   const handleFiltroChange = (e) => {
@@ -61,9 +73,9 @@ const Catalogo = () => {
     setFiltros(prev => ({ ...prev, [name]: value }));
   };
 
-  useEffect(() => {
-    filtrarProductos();
-  }, [filtros, ordenPrecio]);
+  const limpiarFiltros = () => {
+    setFiltros({ categoria: '', color: '', talla: '' });
+  };
 
   const agregarAlCarrito = (producto) => {
     const carrito = getCarritoLanding();
@@ -84,12 +96,12 @@ const Catalogo = () => {
     }
     
     setCarritoLanding(carrito);
-    alert('Producto agregado al carrito');
+    mostrarToast(`${producto.nombre} agregado al carrito`, 'success');
   };
 
   const toggleWishlist = (producto) => {
     if (!isAuthenticated) {
-      alert('Inicia sesión para agregar a favoritos');
+      mostrarToast('Inicia sesión para agregar a favoritos', 'warning');
       navigate('/login');
       return;
     }
@@ -101,7 +113,8 @@ const Catalogo = () => {
       const nuevaWishlist = wishlistActual.filter(w => w.productoId !== producto.id);
       setWishlist(nuevaWishlist);
       setWishlistState(prev => prev.filter(id => id !== producto.id));
-      alert('Producto eliminado de favoritos');
+      addLog(`Producto eliminado de wishlist`, currentUser, `Producto: ${producto.nombre}`);
+      mostrarToast(`${producto.nombre} eliminado de favoritos`, 'info');
     } else {
       const nuevoFavorito = {
         id: Date.now(),
@@ -111,42 +124,113 @@ const Catalogo = () => {
       };
       setWishlist([nuevoFavorito, ...wishlistActual]);
       setWishlistState(prev => [...prev, producto.id]);
-      alert('Producto agregado a favoritos');
+      addLog(`Producto agregado a wishlist`, currentUser, `Producto: ${producto.nombre}`);
+      mostrarToast(`${producto.nombre} agregado a favoritos`, 'success');
     }
   };
 
-  const cargarReseñas = (productoId) => {
+  const abrirModalReseñas = (producto) => {
     const todasReseñas = getResenas();
-    setReseñas(todasReseñas.filter(r => r.productoId === productoId));
+    const reseñasProductoFiltradas = todasReseñas.filter(r => r.productoId === producto.id);
+    setReseñasProducto(reseñasProductoFiltradas);
+    setReseñasModal(producto);
+    setNuevaReseña({ calificacion: 0, comentario: '' });
   };
 
-  const agregarReseña = (productoId, calificacion, comentario) => {
+  const agregarReseña = () => {
     if (!isAuthenticated) {
-      alert('Inicia sesión para calificar');
+      mostrarToast('Inicia sesión para calificar', 'warning');
       return;
     }
     
-    const nuevaReseña = {
+    if (nuevaReseña.calificacion === 0) {
+      mostrarToast('Selecciona una calificación', 'warning');
+      return;
+    }
+    
+    if (!nuevaReseña.comentario.trim()) {
+      mostrarToast('Escribe un comentario', 'warning');
+      return;
+    }
+    
+    const reseñaData = {
       id: Date.now(),
-      productoId,
+      productoId: reseñasModal.id,
       usuario: currentUser,
-      calificacion,
-      comentario,
+      calificacion: nuevaReseña.calificacion,
+      comentario: nuevaReseña.comentario,
       fecha: new Date().toLocaleString()
     };
     
     const reseñasActuales = getResenas();
-    setResenas([nuevaReseña, ...reseñasActuales]);
-    cargarReseñas(productoId);
-    alert('Gracias por tu calificación');
+    setResenas([reseñaData, ...reseñasActuales]);
+    
+    // Actualizar reseñas en modal
+    const todasReseñas = getResenas();
+    const reseñasProductoFiltradas = todasReseñas.filter(r => r.productoId === reseñasModal.id);
+    setReseñasProducto(reseñasProductoFiltradas);
+    
+    setNuevaReseña({ calificacion: 0, comentario: '' });
+    addLog(`Reseña agregada`, currentUser, `Producto: ${reseñasModal.nombre}, Calificación: ${nuevaReseña.calificacion}`);
+    mostrarToast('Gracias por tu calificación', 'success');
   };
 
-  const coloresUnicos = [...new Set(getProductos().filter(p => p.estado === 'activo').map(p => p.color))];
-  const tallasUnicas = [...new Set(getProductos().filter(p => p.estado === 'activo').map(p => p.talla))];
+  const mostrarToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Obtener valores únicos para filtros
+  const coloresUnicos = [...new Set(productos.map(p => p.color).filter(Boolean))];
+  const tallasUnicas = [...new Set(productos.map(p => p.talla).filter(Boolean))];
+
+  // Paginación
+  const totalPages = Math.ceil(productosFiltrados.length / itemsPerPage);
+  const paginatedProducts = productosFiltrados.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Calcular rating promedio de un producto
+  const getProductRating = (productoId) => {
+    const todasReseñas = getResenas();
+    const reseñasProducto = todasReseñas.filter(r => r.productoId === productoId);
+    if (reseñasProducto.length === 0) return null;
+    const avg = reseñasProducto.reduce((sum, r) => sum + r.calificacion, 0) / reseñasProducto.length;
+    return { avg, count: reseñasProducto.length };
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex justify-center items-center h-[60vh]">
+          <Spinner size="lg" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
       <Navbar />
+      
+      {/* Toast Notifications */}
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50 animate-slide-up">
+          <div className={`rounded-xl shadow-lg p-4 flex items-center gap-3 ${
+            toast.type === 'success' ? 'bg-green-500' :
+            toast.type === 'error' ? 'bg-red-500' :
+            toast.type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'
+          } text-white`}>
+            <span className="text-xl">
+              {toast.type === 'success' ? '✓' : toast.type === 'error' ? '✕' : toast.type === 'warning' ? '⚠' : 'ℹ'}
+            </span>
+            <p className="font-medium">{toast.message}</p>
+          </div>
+        </div>
+      )}
       
       <section className="py-10 px-[8%]">
         <div className="text-center mb-8">
@@ -154,77 +238,180 @@ const Catalogo = () => {
           <p className="text-[#7a5d68]">Explora nuestros productos disponibles</p>
         </div>
         
-        {/* CAMBIO: Agregar ordenamiento por precio */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-          <div className="card">
-            <label className="block font-bold mb-2">Categoría</label>
-            <select name="categoria" value={filtros.categoria} onChange={handleFiltroChange} className="input-field">
-              <option value="">Todas</option>
-              <option>Ropa</option><option>Calzado</option><option>Accesorio</option>
-            </select>
+        {/* Filtros */}
+        <div className="bg-white rounded-2xl border border-[#f1d7e1] shadow-soft p-6 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-bold text-lg">Filtros</h3>
+            <button onClick={limpiarFiltros} className="text-sm text-[#b83267] hover:underline">
+              Limpiar filtros
+            </button>
           </div>
-          
-          <div className="card">
-            <label className="block font-bold mb-2">Color</label>
-            <select name="color" value={filtros.color} onChange={handleFiltroChange} className="input-field">
-              <option value="">Todos</option>
-              {coloresUnicos.map(color => <option key={color}>{color}</option>)}
-            </select>
-          </div>
-          
-          <div className="card">
-            <label className="block font-bold mb-2">Talla</label>
-            <select name="talla" value={filtros.talla} onChange={handleFiltroChange} className="input-field">
-              <option value="">Todas</option>
-              {tallasUnicas.map(talla => <option key={talla}>{talla}</option>)}
-            </select>
-          </div>
-          
-          <div className="card">
-            <label className="block font-bold mb-2">Ordenar por precio</label>
-            <select value={ordenPrecio} onChange={(e) => setOrdenPrecio(e.target.value)} className="input-field">
-              <option value="">Por defecto</option>
-              <option value="asc">Menor a mayor</option>
-              <option value="desc">Mayor a menor</option>
-            </select>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {productos.map((producto) => (
-            <div key={producto.id} className="bg-white rounded-2xl overflow-hidden shadow-soft border border-[#f1d7e1] relative">
-              <button 
-                onClick={() => toggleWishlist(producto)}
-                className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:scale-110 transition z-10"
-              >
-                {wishlist.includes(producto.id) ? '❤️' : '🤍'}
-              </button>
-
-              <img src={producto.imagen} alt={producto.nombre} className="w-full h-64 object-cover" />
-              <div className="p-5">
-                <span className="inline-block bg-[#ffe1ec] text-[#b83267] text-xs font-bold px-3 py-1 rounded-full mb-3">
-                  {producto.categoria}
-                </span>
-                <h3 className="font-bold text-lg mb-1">{producto.nombre}</h3>
-                <p className="text-sm text-[#7a5d68]">Color: {producto.color} | Talla: {producto.talla}</p>
-                <p className="text-sm text-[#7a5d68] mb-2">Stock: {producto.stock} unidades</p>
-                <p className="text-xl font-bold text-[#b83267] mb-4">S/ {producto.precio.toFixed(2)}</p>
-                <button 
-                  onClick={() => agregarAlCarrito(producto)} 
-                  disabled={producto.stock <= 0}
-                  className={`btn-primary w-full text-center ${producto.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {producto.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
-                </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="block font-semibold mb-2">Categoría</label>
+              <select name="categoria" value={filtros.categoria} onChange={handleFiltroChange} className="input-field">
+                <option value="">Todas</option>
+                <option value="Ropa">Ropa</option>
+                <option value="Calzado">Calzado</option>
+                <option value="Accesorio">Accesorio</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block font-semibold mb-2">Color</label>
+              <select name="color" value={filtros.color} onChange={handleFiltroChange} className="input-field">
+                <option value="">Todos</option>
+                {coloresUnicos.map(color => <option key={color}>{color}</option>)}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block font-semibold mb-2">Talla</label>
+              <select name="talla" value={filtros.talla} onChange={handleFiltroChange} className="input-field">
+                <option value="">Todas</option>
+                {tallasUnicas.map(talla => <option key={talla}>{talla}</option>)}
+              </select>
+            </div>
+            
+            <div className="flex items-end">
+              <div className="text-sm text-[#7a5d68]">
+                {productosFiltrados.length} productos encontrados
               </div>
             </div>
-          ))}
+          </div>
         </div>
         
-        {productos.length === 0 && (
-          <p className="text-center text-[#7a5d68] py-12">No hay productos disponibles con los filtros seleccionados.</p>
+        {/* Productos */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {paginatedProducts.map((producto) => {
+            const rating = getProductRating(producto.id);
+            return (
+              <div key={producto.id} className="bg-white rounded-2xl overflow-hidden shadow-soft border border-[#f1d7e1] relative group">
+                <button 
+                  onClick={() => toggleWishlist(producto)}
+                  className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:scale-110 transition z-10"
+                >
+                  {wishlist.includes(producto.id) ? '❤️' : '🤍'}
+                </button>
+
+                <img src={producto.imagen} alt={producto.nombre} className="w-full h-64 object-cover group-hover:scale-105 transition duration-300" />
+                <div className="p-5">
+                  <span className="inline-block bg-[#ffe1ec] text-[#b83267] text-xs font-bold px-3 py-1 rounded-full mb-3">
+                    {producto.categoria}
+                  </span>
+                  <h3 className="font-bold text-lg mb-1">{producto.nombre}</h3>
+                  <p className="text-sm text-[#7a5d68]">Color: {producto.color} | Talla: {producto.talla}</p>
+                  <p className="text-sm text-[#7a5d68] mb-2">Stock: {producto.stock} unidades</p>
+                  
+                  {/* Rating */}
+                  {rating && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <StarRating rating={rating.avg} readonly size="sm" />
+                      <span className="text-xs text-gray-500">({rating.count})</span>
+                    </div>
+                  )}
+                  
+                  <p className="text-xl font-bold text-[#b83267] mb-4">S/ {producto.precio.toFixed(2)}</p>
+                  
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => agregarAlCarrito(producto)} 
+                      disabled={producto.stock <= 0}
+                      className={`btn-primary flex-1 text-center ${producto.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {producto.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
+                    </button>
+                    <button
+                      onClick={() => abrirModalReseñas(producto)}
+                      className="bg-gray-100 text-gray-700 px-3 rounded-xl hover:bg-gray-200 transition"
+                      title="Ver reseñas"
+                    >
+                      ★
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        {productosFiltrados.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-[#7a5d68] text-lg mb-4">No hay productos disponibles con los filtros seleccionados.</p>
+            <button onClick={limpiarFiltros} className="btn-primary">
+              Limpiar filtros
+            </button>
+          </div>
+        )}
+        
+        {/* Paginación */}
+        {productosFiltrados.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         )}
       </section>
+      
+      {/* Modal de Reseñas */}
+      <Modal
+        isOpen={!!reseñasModal}
+        onClose={() => setReseñasModal(null)}
+        title={`Reseñas - ${reseñasModal?.nombre}`}
+        size="lg"
+      >
+        <div className="space-y-6">
+          {/* Formulario nueva reseña */}
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h4 className="font-bold mb-3">Escribe tu reseña</h4>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-semibold mb-1">Calificación</label>
+                <StarRating
+                  rating={nuevaReseña.calificacion}
+                  onRatingChange={(val) => setNuevaReseña({ ...nuevaReseña, calificacion: val })}
+                  size="lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1">Comentario</label>
+                <textarea
+                  value={nuevaReseña.comentario}
+                  onChange={(e) => setNuevaReseña({ ...nuevaReseña, comentario: e.target.value })}
+                  rows="3"
+                  className="input-field"
+                  placeholder="¿Qué te pareció el producto?"
+                />
+              </div>
+              <button onClick={agregarReseña} className="btn-primary w-full">
+                Enviar reseña
+              </button>
+            </div>
+          </div>
+          
+          {/* Lista de reseñas */}
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            <h4 className="font-bold">Opiniones de clientes ({reseñasProducto.length})</h4>
+            {reseñasProducto.length === 0 ? (
+              <p className="text-[#7a5d68] text-center py-4">No hay reseñas para este producto aún.</p>
+            ) : (
+              reseñasProducto.map(reseña => (
+                <div key={reseña.id} className="border-b border-gray-200 pb-3">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <StarRating rating={reseña.calificacion} readonly size="sm" />
+                      <p className="font-semibold mt-1">{reseña.usuario}</p>
+                    </div>
+                    <span className="text-xs text-[#7a5d68]">{reseña.fecha}</span>
+                  </div>
+                  <p className="text-[#7a5d68]">{reseña.comentario}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </Modal>
       
       <Footer />
     </div>
