@@ -468,6 +468,11 @@ export const setFaq = (faq) => {
     setLogsSistema([nuevoLog, ...logs.slice(0, 199)]);
   };
 
+    // ============ RESPALDOS ============
+  export const getRespaldos = () => getItem('respaldos');
+  export const setRespaldos = (data) => setItem('respaldos', data);
+
+
 
 // MEJORA 14: Funciones de Newsletter
 export const getNewsletter = () => {
