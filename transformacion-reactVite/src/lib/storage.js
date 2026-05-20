@@ -492,6 +492,10 @@ export const setFaq = (faq) => {
   export const getWishlist = () => getItem('wishlist');
   export const setWishlist = (data) => setItem('wishlist', data);
 
+    // ============ RESEÑAS ============
+  export const getResenas = () => getItem('resenas');
+  export const setResenas = (data) => setItem('resenas', data);
+
 
 
 
