@@ -488,6 +488,10 @@ export const setFaq = (faq) => {
   export const getSuscripciones = () => getItem('suscripciones');
   export const setSuscripciones = (data) => setItem('suscripciones', data);
 
+  // ============ WISHLIST ============
+  export const getWishlist = () => getItem('wishlist');
+  export const setWishlist = (data) => setItem('wishlist', data);
+
 
 
 
