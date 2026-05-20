@@ -84,3 +84,33 @@ const Carrito = () => {
     } else {
       descuentoAplicado = cupon.descuento;
     }
+
+    // Marcar cupón como usado
+    const cuponesActualizados = cupones.map(c => 
+      c.codigo === cupon.codigo ? { ...c, usado: true } : c
+    );
+    setCupones(cuponesActualizados);
+    
+    setCuponAplicado(cupon);
+    setDescuento(descuentoAplicado);
+    setMensaje(`Cupón aplicado! Descuento: S/ ${descuentoAplicado.toFixed(2)}`);
+    setTimeout(() => setMensaje(''), 3000);
+  };
+
+  const finalizarCompra = async () => {
+    if (carrito.length === 0) {
+      setMensaje('Agrega al menos un producto para finalizar la compra.');
+      setTimeout(() => setMensaje(''), 3000);
+      return;
+    }
+    
+    if (!isAuthenticated) {
+      localStorage.setItem('redirectAfterLogin', '/carrito');
+      setMensaje('Debe iniciar sesión para solicitar la compra.');
+      setTimeout(() => navigate('/login'), 1500);
+      return;
+    }
+    
+    setLoading(true);
+    
+
