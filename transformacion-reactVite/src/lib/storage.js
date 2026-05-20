@@ -350,6 +350,11 @@ export const setFaq = (faq) => {
     ];
     localStorage.setItem('productos', JSON.stringify(productosIniciales));
   }
+    // Ventas
+  if (!localStorage.getItem('ventas')) {
+    localStorage.setItem('ventas', JSON.stringify([]));
+  }
+
 
 
 // MEJORA 14: Funciones de Newsletter
